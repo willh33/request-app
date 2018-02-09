@@ -1,19 +1,25 @@
+import { Toast } from '@ionic-native/toast';
+import { SQLite } from '@ionic-native/sqlite';
+import { GroupsPage } from '../pages/groups/groups';
+import { RequestsPage } from './../pages/requests/requests';
 import { BrowserModule } from '@angular/platform-browser';
 import { ErrorHandler, NgModule } from '@angular/core';
 import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
 
 import { MyApp } from './app.component';
-import { HomePage } from '../pages/home/home';
-import { ListPage } from '../pages/list/list';
 
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
+import { AddRequestPage } from '../pages/addRequestsPage/addRequest';
+import { EditRequestPage } from '../pages/editRequestPage/editRequest';
 
 @NgModule({
   declarations: [
     MyApp,
-    HomePage,
-    ListPage
+    GroupsPage,
+    RequestsPage,
+    AddRequestPage,
+    EditRequestPage
   ],
   imports: [
     BrowserModule,
@@ -22,13 +28,17 @@ import { SplashScreen } from '@ionic-native/splash-screen';
   bootstrap: [IonicApp],
   entryComponents: [
     MyApp,
-    HomePage,
-    ListPage
+    GroupsPage,
+    RequestsPage,
+    AddRequestPage,
+    EditRequestPage
   ],
   providers: [
     StatusBar,
     SplashScreen,
-    {provide: ErrorHandler, useClass: IonicErrorHandler}
+    {provide: ErrorHandler, useClass: IonicErrorHandler},
+    SQLite,
+    Toast
   ]
 })
 export class AppModule {}

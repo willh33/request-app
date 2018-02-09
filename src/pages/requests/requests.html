@@ -1,0 +1,31 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>Requests</ion-title>
+    <button ion-button icon-only (click)="addData()" class="add-circle">
+      <ion-icon name="add-circle"></ion-icon>
+    </button>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+  <ion-toolbar no-border-top>
+    <ion-segment [(ngModel)]="requestType">
+      <ion-segment-button class="todo-segment" value="todo">
+        To Do
+      </ion-segment-button>
+      <ion-segment-button class="doing-segment" value="doing">
+        Doing
+      </ion-segment-button>
+      <ion-segment-button class="done-segment" value="done">
+        Done
+      </ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
+  <ion-list>
+      <ion-item-sliding *ngFor="let request of getRequests(requestType); let i=index">
+          <ion-item nopadding (click)="editData(request.rowid)">
+            <span>{{request.title}}</span>
+          </ion-item>
+      </ion-item-sliding>
+  </ion-list>
+</ion-content>

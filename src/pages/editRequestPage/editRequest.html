@@ -1,0 +1,40 @@
+<ion-header>
+
+  <ion-navbar>
+    <ion-title>Edit</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+<ion-content padding>
+  <h2>Edit</h2>
+  <form (ngSubmit)="updateData()">
+    <ion-item>
+      <ion-label>Created Date</ion-label>
+      <ion-datetime displayFormat="MM/DD/YYYY" [(ngModel)]="data.createddt" name="createddt" required=""></ion-datetime>
+    </ion-item>
+    <ion-item>
+    <ion-label>Status</ion-label>
+    <ion-select [(ngModel)]="data.status" name="status" required="">
+      <ion-option value="todo">To Do</ion-option>
+      <ion-option value="doing">Doing</ion-option>
+      <ion-option value="done">Done</ion-option>
+    </ion-select>
+    </ion-item>
+    <ion-item>
+      <ion-label>Title</ion-label>
+      <ion-input type="text" placeholder="Title" [(ngModel)]="data.title" name="title" required="" ></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label>Description</ion-label>
+      <ion-input type="text" placeholder="Description" [(ngModel)]="data.description" name="description" required="" ></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label>Order Number</ion-label>
+      <ion-input type="number" placeholder="Order Number" [(ngModel)]="data.orderno" name="orderno" required="" ></ion-input>
+    </ion-item>
+    <ion-input type="hidden" [(ngModel)]="data.rowid" name="rowid"></ion-input>
+    <ion-input type="hidden" [(ngModel)]="data.modifieddt" name="modifieddt"></ion-input>
+    <button ion-button type="submit" block>Update Data</button>
+  </form>
+</ion-content>
