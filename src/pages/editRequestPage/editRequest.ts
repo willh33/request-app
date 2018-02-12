@@ -28,6 +28,7 @@ export class EditRequestPage {
         .then(res => {
           if(res.rows.length > 0) {
             let item = res.rows.item(0);
+            console.log("id " + item.rowid);
             this.data.rowid = item.rowid;
             this.data.title = item.title;
             this.data.description = item.description;

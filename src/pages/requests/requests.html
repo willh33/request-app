@@ -1,5 +1,8 @@
 <ion-header>
   <ion-navbar>
+    <button ion-button icon-only (click)="deleteData()" class="minus-circle">
+      <ion-icon name="minus-circle"></ion-icon>
+    </button>
     <ion-title>Requests</ion-title>
     <button ion-button icon-only (click)="addData()" class="add-circle">
       <ion-icon name="add-circle"></ion-icon>
@@ -21,8 +24,8 @@
       </ion-segment-button>
     </ion-segment>
   </ion-toolbar>
-  <ion-list>
-      <ion-item-sliding *ngFor="let request of getRequests(requestType); let i=index">
+  <ion-list reorder="true" (ionItemReorder)="reorderItems($event)">
+      <ion-item-sliding *ngFor="let request of getRequests(requestType); let i=index">{{i+1}}. {{requests}}
           <ion-item nopadding (click)="editData(request.rowid)">
             <span>{{request.title}}</span>
           </ion-item>

@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NavController, NavParams } from 'ionic-angular';
+import { NavController, reorderArray, NavParams } from 'ionic-angular';
 import { SQLite, SQLiteObject } from '@ionic-native/sqlite';
 import { AddRequestPage } from '../addRequestsPage/addRequest';
 import { Platform } from 'ionic-angular';
@@ -46,14 +46,15 @@ export class RequestsPage {
       name: 'ionicdb.db',
       location: 'default'
     }).then((db: SQLiteObject) => {
-      db.executeSql('CREATE TABLE IF NOT EXISTS request(rowid INTEGER PRIMARY KEY, title TEXT, description TEXT, status TEXT, orderno, createddt TEXT, modifieddt TEXT)', {})
+      db.executeSql('CREATE TABLE IF NOT EXISTS request(rowid INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, description TEXT, status TEXT, orderno, createddt TEXT, modifieddt TEXT)', {})
       .then(res => console.log('Executed SQL'))
       .catch(e => alert(e));
       db.executeSql('SELECT * FROM request', {})
       .then(res => {
         for(var i=0; i<res.rows.length; i++) {
           let item = res.rows.item(i);
-          console.log("status " + item.status);
+          console.log("status " + item.status + " id " +item.rowid);
+
           if(this.requests[item.status])
           {
             this.requests[item.status].push(
@@ -72,6 +73,12 @@ export class RequestsPage {
       }).catch(e => alert(e));
     }).catch(e => alert(e));
     console.dir()
+  }
+
+  reorderItems (indexes){
+      this.requests.todo = reorderArray(this.requests.todo, indexes);
+      this.requests.doing = reorderArray(this.requests.doing, indexes);
+      this.requests.done = reorderArray(this.requests.done, indexes);
   }
 
   addData() {
@@ -95,7 +102,7 @@ export class RequestsPage {
       name: 'ionicdb.db',
       location: 'default'
     }).then((db: SQLiteObject) => {
-      db.executeSql('DELETE FROM expense WHERE rowid=?', [rowid])
+      db.executeSql('DELETE FROM request WHERE rowid=?', [rowid])
       .then(res => {
         console.log(res);
         this.getData();
