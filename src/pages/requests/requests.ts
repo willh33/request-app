@@ -15,6 +15,7 @@ export class RequestsPage {
   requests = {'todo': [], 'doing': [], 'done': []};
   totalRequests : 0;
   requestType: "doing";
+  db : any;
 
   constructor(public navCtrl: NavController, public navParams: NavParams, private sqlite: SQLite,  private platform: Platform) {
     this.requests = {'todo': [], 'doing': [], 'done': []};
@@ -46,10 +47,11 @@ export class RequestsPage {
       name: 'ionicdb.db',
       location: 'default'
     }).then((db: SQLiteObject) => {
+      this.db = db;
       db.executeSql('CREATE TABLE IF NOT EXISTS request(rowid INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, description TEXT, status TEXT, orderno, createddt TEXT, modifieddt TEXT)', {})
       .then(res => console.log('Executed SQL'))
       .catch(e => alert(e));
-      db.executeSql('SELECT * FROM request', {})
+      db.executeSql('SELECT * FROM request order by orderno', {})
       .then(res => {
         for(var i=0; i<res.rows.length; i++) {
           let item = res.rows.item(i);
@@ -76,10 +78,78 @@ export class RequestsPage {
   }
 
   reorderItems (indexes){
+      let from = indexes.from;
+      let to = indexes.to;
+      if(from > to)
+      {
+        //increment rows above it once
+        this.swapAndIncrement(from, to);
+      }
+      else
+      {
+        //decrement corresponding rows once
+
+        this.swapAndDecrement(from, to);
+      }
       this.requests.todo = reorderArray(this.requests.todo, indexes);
       this.requests.doing = reorderArray(this.requests.doing, indexes);
       this.requests.done = reorderArray(this.requests.done, indexes);
+      console.log("id " + indexes);
   }
+
+  swapAndIncrement(from, to) {
+    console.log("from " + from +" To " + to)
+    //Select the row being moved
+    this.db.executeSql('SELECT * FROM request WHERE request.orderno = ?', {from})
+    .then(draggedObject => {
+        //Select all the rows that need updated, All the rows in between to and from
+        this.db.executeSql('SELECT * FROM request WHERE orderno >= ? AND orderno < ? and status = ? ORDER BY orderno', [to, from, this.requestType])
+        .then(rows => {
+            //Update rows in between
+            rows.forEach(row => {
+                let rowid = row.rowid;
+                this.db.executeSql('UPDATE request SET orderno = orderno + 1 WHERE rowid = ?', [rowid])
+                .then(res => console.log(res))
+                .catch(e => alert(e));
+            });
+
+            //Update the row that was dragged.
+            let rowid = draggedObject.rowid;
+            this.db.executeSql('UPDATE request SET orderno = ? WHERE rowid = ?', [to, rowid])
+                .then(res => console.log(res))
+                .catch(e => alert(e));
+        })
+    })
+    .catch(e => alert(e));
+  }
+  swapAndDecrement(from, to) {
+    console.log("from " + from +" To " + to)
+    //Select the row being moved
+    this.db.executeSql('SELECT * FROM request WHERE request.orderno = ?', {from})
+    .then(draggedObject => {
+        //Select all the rows that need updated, All the rows in between to and from
+        this.db.executeSql('SELECT * FROM request WHERE orderno > ? AND orderno <= ? and status = ? ORDER BY orderno', [from , to, this.requestType])
+        .then(rows => {
+            //Update rows in between
+            rows.forEach(row => {
+                let rowid = row.rowid;
+                this.db.executeSql('UPDATE request SET orderno = orderno - 1 WHERE rowid = ?', [rowid])
+                .then(res => console.log(res))
+                .catch(e => alert(e));
+            });
+
+            //Update the row that was dragged.
+            let rowid = draggedObject.rowid;
+            this.db.executeSql('UPDATE request SET orderno = ? WHERE rowid = ?', [to, rowid])
+                .then(res => console.log(res))
+                .catch(e => alert(e));
+        })
+    })
+    .catch(e => alert(e));
+
+
+  }
+
 
   addData() {
     this.navCtrl.push(AddRequestPage);

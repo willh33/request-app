@@ -10,6 +10,8 @@ import { Toast } from '@ionic-native/toast';
 export class AddRequestPage {
 
   data = { title:"", description:"", status:"Doing", orderno: 0, createddt: new Date(), modifieddt: null};
+  db : any;
+
 
   constructor(public navCtrl: NavController, public navParams: NavParams,
               private sqlite: SQLite,
@@ -20,7 +22,27 @@ export class AddRequestPage {
       name: 'ionicdb.db',
       location: 'default'
     }).then((db: SQLiteObject) => {
-      db.executeSql('INSERT INTO request VALUES(NULL,?,?,?,?,?, NULL)',[this.data.title,this.data.description,this.data.status,this.data.orderno, this.data.createddt])
+      this.db = db;
+      this.db.executeSql('SELECT MAX(orderno) FROM request WHERE request.status = ?', [this.data.status])
+      .then(maxOrderNo => {
+        for(key in maxOrderNo) {
+          if(maxOrderNo.hasOwnProperty(key)) {
+              var value = maxOrderNo[key];
+              //do something with value;
+          }
+        }
+        maxOrderNo.forEach( (key, value) => {
+          
+        });
+        console.log(Object.keys(maxOrderNo.rows.item));
+        console.log(Object.keys(maxOrderNo.rows.item(0)));
+        console.log(Object.values(maxOrderNo.rows.item));
+        console.log(Object.toString(maxOrderNo.rows.item(0)));
+        console.log("max no " + maxOrderNo.rows.item(0));
+        let newOrderNo = maxOrderNo + 1;
+        if(newOrderNo == 1)
+          newOrderNo = 0;
+        db.executeSql('INSERT INTO request VALUES(NULL,?,?,?,?,?, NULL)',[this.data.title,this.data.description,this.data.status,newOrderNo, new Date()])
         .then(res => {
           console.log(res);
           this.toast.show('Data saved', '5000', 'center').subscribe(
@@ -37,10 +59,8 @@ export class AddRequestPage {
             }
           );
         });
-        db.executeSql('SELECT * FROM request', {})
-        .then(res => {
-          console.dir(res.rows);
-        });
+      })
+      .catch(e => alert(e));
     }).catch(e => {
       console.log(e);
       this.toast.show(e, '5000', 'center').subscribe(

@@ -61,7 +61,7 @@ export class EditRequestPage {
       name: 'ionicdb.db',
       location: 'default'
     }).then((db: SQLiteObject) => {
-      db.executeSql('UPDATE request SET title=?,description=?,status=?,orderno=?, modifieddt=? WHERE rowid=?',[this.data.title,this.data.description,this.data.status,this.data.orderno,this.data.modifieddt, this.data.rowid])
+      db.executeSql('UPDATE request SET title=?,description=?,status=?, modifieddt=? WHERE rowid=?',[this.data.title,this.data.description,this.data.status,new Date(), this.data.rowid])
         .then(res => {
           console.log(res);
           this.toast.show('Data updated', '5000', 'center').subscribe(

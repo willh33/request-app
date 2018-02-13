@@ -11,10 +11,6 @@
     <h2>Add Request</h2>
     <form (ngSubmit)="saveData()">
       <ion-item>
-        <ion-label>Created Date</ion-label>
-        <ion-datetime displayFormat="MM/DD/YYYY" [(ngModel)]="data.createddt" name="createddt" required=""></ion-datetime>
-      </ion-item>
-      <ion-item>
         <ion-label>Status</ion-label>
         <ion-select [(ngModel)]="data.status" name="status" required="">
           <ion-option value="todo">To Do</ion-option>
@@ -29,10 +25,6 @@
       <ion-item>
         <ion-label>Description</ion-label>
         <ion-input type="text" placeholder="Description" [(ngModel)]="data.description" name="description" required="" ></ion-input>
-      </ion-item>
-      <ion-item>
-        <ion-label>Order Number</ion-label>
-        <ion-input type="number" placeholder="Order No" [(ngModel)]="data.orderno" name="orderno" required="" ></ion-input>
       </ion-item>
       <button ion-button type="submit" block>Save Data</button>
     </form>
