@@ -1,3 +1,4 @@
+import { AppData } from './../providers/app-data';
 import { GroupsPage } from './../pages/groups/groups';
 import { RequestsPage } from './../pages/requests/requests';
 import { Component, ViewChild } from '@angular/core';
@@ -11,11 +12,11 @@ import { SplashScreen } from '@ionic-native/splash-screen';
 export class MyApp {
   @ViewChild(Nav) nav: Nav;
 
-  rootPage: any = RequestsPage;
+  rootPage: any;
 
   pages: Array<{title: string, component: any}>;
 
-  constructor(public platform: Platform, public statusBar: StatusBar, public splashScreen: SplashScreen) {
+  constructor(public platform: Platform, public statusBar: StatusBar, public splashScreen: SplashScreen, private appData : AppData) {
     this.initializeApp();
 
     // used for an example of ngFor and navigation
@@ -32,6 +33,9 @@ export class MyApp {
       // Here you can do any higher level native things you might need.
       this.statusBar.styleDefault();
       this.splashScreen.hide();
+      this.appData.createDatabaseAndTables().then(res => {
+        this.rootPage = RequestsPage;
+      });
     });
   }
 

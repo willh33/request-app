@@ -13,9 +13,10 @@
       <ion-item>
         <ion-label>Status</ion-label>
         <ion-select [(ngModel)]="data.status" name="status" required="">
-          <ion-option value="todo">To Do</ion-option>
+          <ion-option *ngFor="let status of statuses">{{status.title}}</ion-option>
+          <!-- <ion-option value="todo">To Do</ion-option>
           <ion-option value="doing">Doing</ion-option>
-          <ion-option value="done">Done</ion-option>
+          <ion-option value="done">Done</ion-option> -->
         </ion-select>
       </ion-item>
       <ion-item>

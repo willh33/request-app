@@ -13,14 +13,8 @@
 <ion-content>
   <ion-toolbar no-border-top>
     <ion-segment [(ngModel)]="requestType">
-      <ion-segment-button class="todo-segment" value="todo">
-        To Do
-      </ion-segment-button>
-      <ion-segment-button class="doing-segment" value="doing">
-        Doing
-      </ion-segment-button>
-      <ion-segment-button class="done-segment" value="done">
-        Done
+      <ion-segment-button *ngFor="let status of statuses" [ngStyle]="{'color': status.color}" value="{{status.title}}" (tap)="contentChanged(status.title)">
+        {{status.title}}
       </ion-segment-button>
     </ion-segment>
   </ion-toolbar>

@@ -1,3 +1,4 @@
+import { AppData } from './../providers/app-data';
 import { Toast } from '@ionic-native/toast';
 import { SQLite } from '@ionic-native/sqlite';
 import { GroupsPage } from '../pages/groups/groups';
@@ -38,7 +39,8 @@ import { EditRequestPage } from '../pages/editRequestPage/editRequest';
     SplashScreen,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
     SQLite,
-    Toast
+    Toast,
+    AppData
   ]
 })
 export class AppModule {}

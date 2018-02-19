@@ -4,6 +4,7 @@ import { SQLite, SQLiteObject } from '@ionic-native/sqlite';
 import { AddRequestPage } from '../addRequestsPage/addRequest';
 import { Platform } from 'ionic-angular';
 import { EditRequestPage } from '../editRequestPage/editRequest';
+import { AppData } from '../../providers/app-data';
 
 @Component({
   selector: 'page-requests',
@@ -12,13 +13,20 @@ import { EditRequestPage } from '../editRequestPage/editRequest';
 export class RequestsPage {
   selectedItem: any;
   icons: string[];
-  requests = {'todo': [], 'doing': [], 'done': []};
+  requests = {'In Process': []};
   totalRequests : 0;
-  requestType: "doing";
+  requestType: "In Process";
   db : any;
+  statuses = [];
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, private sqlite: SQLite,  private platform: Platform) {
-    this.requests = {'todo': [], 'doing': [], 'done': []};
+
+  constructor(public navCtrl: NavController, public navParams: NavParams, private sqlite: SQLite,  private platform: Platform, private appData: AppData) {
+    this.db = this.appData.db;
+    this.statuses = this.appData.statuses;
+    this.statuses.forEach(status => {
+      this.requests[status.title] = [];
+      console.log("status in constructor " + status.title);
+    });
   }
 
   itemTapped(event, item) {
@@ -29,6 +37,7 @@ export class RequestsPage {
   }
 
   ionViewDidLoad() {
+    console.log("ion view did load ");
     // this.platform.ready().then(() => {
     //   console.log("getting data ")
     //   this.getData();
@@ -36,45 +45,44 @@ export class RequestsPage {
   }
 
   ionViewWillEnter() {
+    console.log("will enter ");
     this.platform.ready().then(() => {
-      this.getData();
+      this.db = this.appData.db;
+      this.statuses = this.appData.statuses;
+      this.statuses.forEach(status => {
+        this.requests[status.title] = [];
+        console.log("status in constructor " + status.title);
+      });
+      console.log("platform ready");
+      this.retrieveRequests();
     });
   }
 
-  getData() {
-    this.requests = {'todo': [], 'doing': [], 'done': []};
-    this.sqlite.create({
-      name: 'ionicdb.db',
-      location: 'default'
-    }).then((db: SQLiteObject) => {
-      this.db = db;
-      db.executeSql('CREATE TABLE IF NOT EXISTS request(rowid INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, description TEXT, status TEXT, orderno, createddt TEXT, modifieddt TEXT)', {})
-      .then(res => console.log('Executed SQL'))
-      .catch(e => alert(e));
-      db.executeSql('SELECT * FROM request order by orderno', {})
-      .then(res => {
-        for(var i=0; i<res.rows.length; i++) {
-          let item = res.rows.item(i);
-          console.log("status " + item.status + " id " +item.rowid);
+  retrieveRequests() {
+    console.log("retrieve requests");
+    this.db.executeSql('SELECT * FROM request order by orderno', {})
+    .then(res => {
+      console.log(res.rows.length + " res rows length");
+      for(var i=0; i<res.rows.length; i++) {
+        let item = res.rows.item(i);
+        console.log("status ********* " + item.status + " title " +item.title);
 
-          if(this.requests[item.status])
-          {
-            this.requests[item.status].push(
-              {
-                rowid:item.rowid,
-                title:item.title,
-                description:item.description,
-                status:item.status,
-                orderno:item.orderno,
-                createddt:item.createddt,
-                modifieddt:item.modifieddt
-              })
-          }
+        if(this.requests[item.status])
+        {
+          this.requests[item.status].push(
+            {
+              rowid:item.rowid,
+              title:item.title,
+              description:item.description,
+              status:item.status,
+              orderno:item.orderno,
+              createddt:item.createddt,
+              modifieddt:item.modifieddt
+            })
         }
-        this.totalRequests = res.rows.length;
-      }).catch(e => alert(e));
+      }
+      this.totalRequests = res.rows.length;
     }).catch(e => alert(e));
-    console.dir()
   }
 
   reorderItems (indexes){
@@ -91,10 +99,12 @@ export class RequestsPage {
 
         this.swapAndDecrement(from, to);
       }
-      this.requests.todo = reorderArray(this.requests.todo, indexes);
-      this.requests.doing = reorderArray(this.requests.doing, indexes);
-      this.requests.done = reorderArray(this.requests.done, indexes);
-      console.log("id " + indexes);
+      for(var prop in this.requests)
+      {
+        if (this.requests.hasOwnProperty(prop)) {
+          reorderArray(this.requests[prop], indexes);
+        }
+      }
   }
 
   swapAndIncrement(from, to) {
@@ -175,15 +185,19 @@ export class RequestsPage {
       db.executeSql('DELETE FROM request WHERE rowid=?', [rowid])
       .then(res => {
         console.log(res);
-        this.getData();
+        this.retrieveRequests();
       })
       .catch(e => console.log(e));
     }).catch(e => console.log(e));
   }
 
   getRequests(type: any) {
+    console.log("request type " + this.requestType);
     console.log("type " + type);
     return this.requests[type];;
+  }
+  contentChanged(title: any) {
+    this.requestType = title;
   }
 }
 
