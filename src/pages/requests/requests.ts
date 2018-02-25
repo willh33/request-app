@@ -23,6 +23,7 @@ export class RequestsPage {
   constructor(public navCtrl: NavController, public navParams: NavParams, private sqlite: SQLite,  private platform: Platform, private appData: AppData) {
     this.db = this.appData.db;
     this.statuses = this.appData.statuses;
+    console.log("requset constructor");
     this.statuses.forEach(status => {
       this.requests[status.title] = [];
       console.log("status in constructor " + status.title);
@@ -47,7 +48,13 @@ export class RequestsPage {
   ionViewWillEnter() {
     console.log("will enter ");
     this.platform.ready().then(() => {
+      console.log("platform ready");
+      //Once the platform is ready call a method in app data that gets teh statuses, It will check if the statuses are already inserted
+      //and only insert them if they are not, it will return the statuses, to be used here.
       this.db = this.appData.db;
+
+      console.log("before selecting statuses");
+
       this.statuses = this.appData.statuses;
       this.statuses.forEach(status => {
         this.requests[status.title] = [];

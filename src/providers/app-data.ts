@@ -9,40 +9,16 @@ import { SQLite, SQLiteObject } from '@ionic-native/sqlite';
 @Injectable()
 export class AppData {
 
-  statuses = [];
-  db: SQLiteObject;
+  public statuses = [];
+  public db: SQLiteObject;
+  selectStatusQuery = "SELECT * FROM status ORDER BY createddt";
 
   constructor(private platform: Platform, private sqlite: SQLite) {
 
   }
 
-  createDatabaseAndTables(): Promise<void> {
-    console.log("create dataases and tables");
-
-    return this.sqlite.create({
-      name: 'ionicdb.db',
-      location: 'default'
-    }).then((db: SQLiteObject) => {
-      this.db = db;
-
-      //create request table
-      db.executeSql('CREATE TABLE IF NOT EXISTS request(rowid INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, description TEXT, status INTEGER, orderno, createddt TEXT, modifieddt TEXT)', {})
-      .then(res => {
-        db.executeSql('SELECT * FROM request', {})
-        .then(res => {
-          console.log("res rows length " + res.rows.length);
-        });
-      })
-      .catch(e => alert(e));
-      //Create status table and insert rows
-      return db.executeSql('CREATE TABLE IF NOT EXISTS status(id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, color TEXT, createddt TEXT, modifieddt TEXT)', {})
-      .then(res => {
-        return this.insertStatuses(db);
-      })
-      .catch(e => alert(e));
-    })
-  }
   insertStatuses(db: SQLiteObject): Promise<void> {
+    this.db = db;
     console.log("insert statuses");
     return db.executeSql('SELECT * FROM status', {}).then(res => {
       if(res.rows.length < 1)
@@ -65,6 +41,7 @@ export class AppData {
     }).catch(e => alert(e));
   }
   getAndSetStatuses(db): Promise<void> {
+    this.db = db;
     return db.executeSql('SELECT * FROM status', {}).then(res => {
       for(var i = 0; i<res.rows.length; i++){
         let status = res.rows.item(i);
