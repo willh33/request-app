@@ -25,10 +25,10 @@ export class AppData {
       {
         let query = "INSERT INTO status (title, color, createddt) VALUES"
                                       + "('To Do', " + "'#e13838', '" + new Date() + "'),"
-                                      + "('In Process', " + "'#e13838', '" + new Date() + "'),"
-                                      + "('Review', " + "'#e13838', '" + new Date() + "'),"
-                                      + "('Final Review', " + "'#e13838', '" + new Date() + "'),"
-                                      + "('Done', " + "'#e13838', '" + new Date() + "')";
+                                      + "('In Process', " + "'#d21e82', '" + new Date() + "'),"
+                                      + "('Review', " + "'#d2821e', '" + new Date() + "'),"
+                                      + "('Final Review', " + "'#1ed24d', '" + new Date() + "'),"
+                                      + "('Done', " + "'#1e98d2', '" + new Date() + "')";
         console.log("query is " + query);
         return db.executeSql(query, [])
         .then(res => {

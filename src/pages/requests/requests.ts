@@ -66,17 +66,18 @@ export class RequestsPage {
   }
 
   retrieveRequests() {
+    let me = this;
     console.log("retrieve requests");
-    this.db.executeSql('SELECT * FROM request order by orderno', {})
+    me.db.executeSql('SELECT * FROM request order by orderno', {})
     .then(res => {
       console.log(res.rows.length + " res rows length");
       for(var i=0; i<res.rows.length; i++) {
         let item = res.rows.item(i);
         console.log("status ********* " + item.status + " title " +item.title);
-
-        if(this.requests[item.status])
+        console.log("order number " + item.orderno);
+        if(me.requests[item.status])
         {
-          this.requests[item.status].push(
+          me.requests[item.status].push(
             {
               rowid:item.rowid,
               title:item.title,
@@ -88,7 +89,7 @@ export class RequestsPage {
             })
         }
       }
-      this.totalRequests = res.rows.length;
+      me.totalRequests = res.rows.length;
     }).catch(e => alert(e));
   }
 
@@ -103,7 +104,6 @@ export class RequestsPage {
       else
       {
         //decrement corresponding rows once
-
         this.swapAndDecrement(from, to);
       }
       for(var prop in this.requests)
@@ -114,57 +114,62 @@ export class RequestsPage {
       }
   }
 
+  //Call this when a row is being moved up
   swapAndIncrement(from, to) {
-    console.log("from " + from +" To " + to)
+    let me = this;
     //Select the row being moved
-    this.db.executeSql('SELECT * FROM request WHERE request.orderno = ?', {from})
+    me.db.executeSql('SELECT * FROM request WHERE orderno = ?', [from])
     .then(draggedObject => {
         //Select all the rows that need updated, All the rows in between to and from
-        this.db.executeSql('SELECT * FROM request WHERE orderno >= ? AND orderno < ? and status = ? ORDER BY orderno', [to, from, this.requestType])
+        me.db.executeSql('SELECT * FROM request WHERE orderno >= ? AND orderno < ? and status = ? ORDER BY orderno', [to, from, me.requestType])
         .then(rows => {
-            //Update rows in between
-            rows.forEach(row => {
-                let rowid = row.rowid;
-                this.db.executeSql('UPDATE request SET orderno = orderno + 1 WHERE rowid = ?', [rowid])
-                .then(res => console.log(res))
-                .catch(e => alert(e));
-            });
+          //Update rows in between
+          for(let i = 0; i < rows.rows.length; i++){
+            let row = rows.rows.item(i);
+            let rowid = row.rowid;
+            me.db.executeSql('UPDATE request SET orderno = orderno + 1 WHERE rowid = ?', [rowid])
+              .then(res => console.log(res))
+              .catch(e => alert(e));
+          }
 
-            //Update the row that was dragged.
-            let rowid = draggedObject.rowid;
-            this.db.executeSql('UPDATE request SET orderno = ? WHERE rowid = ?', [to, rowid])
-                .then(res => console.log(res))
-                .catch(e => alert(e));
+          //Update the row that was dragged.
+          let rowid = draggedObject.rows.item(0).rowid;
+          me.db.executeSql('UPDATE request SET orderno = ? WHERE rowid = ?', [to, rowid])
+              .then(res => {
+              })
+              .catch(e => alert(e));
         })
     })
     .catch(e => alert(e));
   }
+
+  //Row si being moved down
   swapAndDecrement(from, to) {
-    console.log("from " + from +" To " + to)
+    let me = this;
     //Select the row being moved
-    this.db.executeSql('SELECT * FROM request WHERE request.orderno = ?', {from})
+    me.db.executeSql('SELECT * FROM request WHERE orderno = ?', [from])
     .then(draggedObject => {
         //Select all the rows that need updated, All the rows in between to and from
-        this.db.executeSql('SELECT * FROM request WHERE orderno > ? AND orderno <= ? and status = ? ORDER BY orderno', [from , to, this.requestType])
+        me.db.executeSql('SELECT * FROM request WHERE orderno > ? AND orderno <= ? and status = ? ORDER BY orderno', [from , to, me.requestType])
         .then(rows => {
             //Update rows in between
-            rows.forEach(row => {
-                let rowid = row.rowid;
-                this.db.executeSql('UPDATE request SET orderno = orderno - 1 WHERE rowid = ?', [rowid])
+            for(let i = 0; i < rows.rows.length; i++){
+              let row = rows.rows.item(i);
+              let rowid = row.rowid;
+              me.db.executeSql('UPDATE request SET orderno = orderno - 1 WHERE rowid = ?', [rowid])
                 .then(res => console.log(res))
                 .catch(e => alert(e));
-            });
+            }
 
             //Update the row that was dragged.
-            let rowid = draggedObject.rowid;
-            this.db.executeSql('UPDATE request SET orderno = ? WHERE rowid = ?', [to, rowid])
-                .then(res => console.log(res))
+            let rowid = draggedObject.rows.item(0).rowid;
+            me.db.executeSql('UPDATE request SET orderno = ? WHERE rowid = ?', [to, rowid])
+                .then(res => {
+                })
                 .catch(e => alert(e));
         })
     })
     .catch(e => alert(e));
-
-
   }
 
 

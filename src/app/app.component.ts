@@ -26,7 +26,7 @@ export class MyApp {
     versionNumber: 1,
     queries: [
       "CREATE TABLE IF NOT EXISTS status (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, color TEXT, createddt TEXT, modifieddt TEXT)",
-      "CREATE TABLE IF NOT EXISTS request (rowid INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, description TEXT, status INTEGER, orderno, createddt TEXT, modifieddt TEXT)"
+      "CREATE TABLE IF NOT EXISTS request (rowid INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, description TEXT, status INTEGER, orderno INTEGER, createddt TEXT, modifieddt TEXT)"
       // "INSERT INTO status (title, color, createddt) VALUES('To Do', " + "'#e13838', '" + new Date() + "')",
       // "INSERT INTO status (title, color, createddt) VALUES('In Process', " + "'#e13838', '" + new Date() + "')",
       // "INSERT INTO status (title, color, createddt) VALUES('Review', " + "'#e13838', '" + new Date() + "')",
@@ -70,7 +70,6 @@ export class MyApp {
   }
 
   callDatabaseMigrations() : Promise<void> {
-    console.log("calling database migrations");
     return this.createVersionHistoryTable()
       .then(function() {
       });
@@ -119,9 +118,6 @@ export class MyApp {
         me.versions.forEach(version => {
           if(version.versionNumber > maxVersion)
             return me.executeInChain(version.queries, version.versionNumber, db).then(res => {
-              // if(version.versionNumber == 1)
-              //   me.appData.getAndSetStatuses(db);
-              console.log("executed all queries");
               //Store each version in the version table
             });
         });
@@ -139,13 +135,9 @@ export class MyApp {
   //Execute all queries in version
   executeInChain(queries, versionNumber, db) : Promise<void> {
     let me = this;
-    console.log("execute all queries");
     var promise = queries.reduce((promise, query) => {
-      console.log("query " + query);
-      console.log("promise " + promise);
       return promise.then(function() {
         return db.executeSql(query, []).then(res => {
-          console.log("executed query " + query);
         });
       });
     }, Promise.resolve());
@@ -157,7 +149,6 @@ export class MyApp {
   //Store the version in the history table
   storeVersionInHistoryTable(versionNumber, db) : Promise<void> {
     let me = this;
-    console.log("store the version in hisotry table");
     var query = "INSERT INTO version_history (versionNumber, migratedAt) VALUES (?, ?)";
     var promise = db.executeSql(query, [versionNumber, new Date()])
       .then(function(res) {
@@ -165,7 +156,6 @@ export class MyApp {
           me.appData.insertStatuses(me.db).then( res => {
             me.rootPage = RequestsPage;
           });
-        console.log("Stored version in history table: " + versionNumber);
         return versionNumber;
       });
     return promise;
