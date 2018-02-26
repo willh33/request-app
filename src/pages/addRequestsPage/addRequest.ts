@@ -41,7 +41,7 @@ export class AddRequestPage {
         newOrderNo = maxOrderNo + 1
       if(this.data.status === "")
         this.data.status = "todo";
-      this.db.executeSql('INSERT INTO request VALUES(NULL,?,?,?,?,?, NULL)',[this.data.title,this.data.description,this.data.status,newOrderNo, new Date()])
+      this.db.executeSql('INSERT INTO request (title, description, status, orderno, createddt, modifieddt) VALUES(?,?,?,?,?, NULL)',[this.data.title,this.data.description,this.data.status,newOrderNo, new Date()])
       .then(res => {
         console.log(res);
         this.toast.show('Data saved', '5000', 'center').subscribe(

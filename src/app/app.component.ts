@@ -26,7 +26,7 @@ export class MyApp {
     versionNumber: 1,
     queries: [
       "CREATE TABLE IF NOT EXISTS status (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, color TEXT, createddt TEXT, modifieddt TEXT)",
-      "CREATE TABLE IF NOT EXISTS request (rowid INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, description TEXT, status INTEGER, orderno INTEGER, createddt TEXT, modifieddt TEXT)"
+      "CREATE TABLE IF NOT EXISTS request (rowid INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, description TEXT, status TEXT, orderno INTEGER, createddt TEXT, modifieddt TEXT)"
       // "INSERT INTO status (title, color, createddt) VALUES('To Do', " + "'#e13838', '" + new Date() + "')",
       // "INSERT INTO status (title, color, createddt) VALUES('In Process', " + "'#e13838', '" + new Date() + "')",
       // "INSERT INTO status (title, color, createddt) VALUES('Review', " + "'#e13838', '" + new Date() + "')",

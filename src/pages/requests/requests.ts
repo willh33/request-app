@@ -106,12 +106,11 @@ export class RequestsPage {
         //decrement corresponding rows once
         this.swapAndDecrement(from, to);
       }
-      for(var prop in this.requests)
-      {
-        if (this.requests.hasOwnProperty(prop)) {
-          reorderArray(this.requests[prop], indexes);
-        }
-      }
+      console.log("request type is in reorder array " + this.requestType);
+      let arrayToReorder = this.requests[this.requestType];
+      let element = arrayToReorder[from];
+      arrayToReorder.splice(indexes.from, 1);
+      arrayToReorder.splice(indexes.to, 0, element);
   }
 
   //Call this when a row is being moved up
@@ -121,9 +120,12 @@ export class RequestsPage {
     me.db.executeSql('SELECT * FROM request WHERE orderno = ?', [from])
     .then(draggedObject => {
         //Select all the rows that need updated, All the rows in between to and from
+        console.log("increment");
+        console.log("to " + to + " from " + from + " request tyep " + me.requestType);
         me.db.executeSql('SELECT * FROM request WHERE orderno >= ? AND orderno < ? and status = ? ORDER BY orderno', [to, from, me.requestType])
         .then(rows => {
           //Update rows in between
+          console.log("length of rows to update " + rows.rows.length);
           for(let i = 0; i < rows.rows.length; i++){
             let row = rows.rows.item(i);
             let rowid = row.rowid;
@@ -143,27 +145,40 @@ export class RequestsPage {
     .catch(e => alert(e));
   }
 
-  //Row si being moved down
+  //Row is being moved down
   swapAndDecrement(from, to) {
     let me = this;
     //Select the row being moved
+        console.log("Decrement");
+        console.log("to " + to + " from " + from + " request tyep " + me.requestType);
     me.db.executeSql('SELECT * FROM request WHERE orderno = ?', [from])
     .then(draggedObject => {
+      console.log("Decrement");
+      console.log("to " + to + " from " + from + " request tyep " + me.requestType);
         //Select all the rows that need updated, All the rows in between to and from
         me.db.executeSql('SELECT * FROM request WHERE orderno > ? AND orderno <= ? and status = ? ORDER BY orderno', [from , to, me.requestType])
         .then(rows => {
+          console.log("rows length in decrement " + rows.rows.length);
             //Update rows in between
             for(let i = 0; i < rows.rows.length; i++){
               let row = rows.rows.item(i);
               let rowid = row.rowid;
+
               me.db.executeSql('UPDATE request SET orderno = orderno - 1 WHERE rowid = ?', [rowid])
                 .then(res => console.log(res))
                 .catch(e => alert(e));
             }
 
             //Update the row that was dragged.
-            let rowid = draggedObject.rows.item(0).rowid;
-            me.db.executeSql('UPDATE request SET orderno = ? WHERE rowid = ?', [to, rowid])
+            let draggedRowId = draggedObject.rows.item(0).rowid;
+            console.log("rowid is " + draggedRowId);
+            me.db.executeSql('SELECT * FROM request WHERE rowid = ?', [draggedRowId])
+                .then(res => {
+                  console.log("length of the dragged objects rowid " + res.rows.item.length);
+                })
+                .catch(e => alert(e));
+
+            me.db.executeSql('UPDATE request SET orderno = ? WHERE rowid = ?', [to, draggedRowId])
                 .then(res => {
                 })
                 .catch(e => alert(e));
