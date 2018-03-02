@@ -117,29 +117,38 @@ export class RequestsPage {
   swapAndIncrement(from, to) {
     let me = this;
     //Select the row being moved
-    me.db.executeSql('SELECT * FROM request WHERE orderno = ?', [from])
-    .then(draggedObject => {
-        //Select all the rows that need updated, All the rows in between to and from
         console.log("increment");
         console.log("to " + to + " from " + from + " request tyep " + me.requestType);
+      me.db.executeSql('SELECT * FROM request WHERE orderno = ? AND status = ?', [from, me.requestType])
+    .then(draggedObject => {
+      console.log("increment");
+      console.log("to " + to + " from " + from + " request tyep " + me.requestType);
+      console.log("dragged object title " + draggedObject.rows.item(0).title);
+        //Select all the rows that need updated, All the rows in between to and from
         me.db.executeSql('SELECT * FROM request WHERE orderno >= ? AND orderno < ? and status = ? ORDER BY orderno', [to, from, me.requestType])
         .then(rows => {
-          //Update rows in between
-          console.log("length of rows to update " + rows.rows.length);
-          for(let i = 0; i < rows.rows.length; i++){
-            let row = rows.rows.item(i);
-            let rowid = row.rowid;
-            me.db.executeSql('UPDATE request SET orderno = orderno + 1 WHERE rowid = ?', [rowid])
-              .then(res => console.log(res))
-              .catch(e => alert(e));
-          }
+          console.log("rows length in decrement " + rows.rows.length);
+            //Update rows in between
+            for(let i = 0; i < rows.rows.length; i++){
+              let row = rows.rows.item(i);
+              let rowid = row.rowid;
 
-          //Update the row that was dragged.
-          let rowid = draggedObject.rows.item(0).rowid;
-          me.db.executeSql('UPDATE request SET orderno = ? WHERE rowid = ?', [to, rowid])
-              .then(res => {
-              })
-              .catch(e => alert(e));
+              me.db.executeSql('UPDATE request SET orderno = orderno + 1 WHERE rowid = ?', [rowid])
+                .then(res => console.log(res))
+                .catch(e => alert(e));
+            }
+
+            //Update the row that was dragged.
+            let draggedRowId = draggedObject.rows.item(0).rowid;
+            console.log("dragged row id is " + draggedRowId);
+            me.db.executeSql("SELECT * FROM request WHERE rowid = ?", [draggedRowId]).then(res => {
+                console.log("res rows length " + res.rows.length + " with row id " + draggedRowId) 
+            });
+
+            me.db.executeSql('UPDATE request SET orderno = ? WHERE rowid = ?', [to, draggedRowId])
+                .then(res => {
+                })
+                .catch(e => alert(e));
         })
     })
     .catch(e => alert(e));
@@ -151,7 +160,7 @@ export class RequestsPage {
     //Select the row being moved
         console.log("Decrement");
         console.log("to " + to + " from " + from + " request tyep " + me.requestType);
-    me.db.executeSql('SELECT * FROM request WHERE orderno = ?', [from])
+      me.db.executeSql('SELECT * FROM request WHERE orderno = ? AND status = ?', [from, me.requestType])
     .then(draggedObject => {
       console.log("Decrement");
       console.log("to " + to + " from " + from + " request tyep " + me.requestType);
@@ -171,12 +180,6 @@ export class RequestsPage {
 
             //Update the row that was dragged.
             let draggedRowId = draggedObject.rows.item(0).rowid;
-            console.log("rowid is " + draggedRowId);
-            me.db.executeSql('SELECT * FROM request WHERE rowid = ?', [draggedRowId])
-                .then(res => {
-                  console.log("length of the dragged objects rowid " + res.rows.item.length);
-                })
-                .catch(e => alert(e));
 
             me.db.executeSql('UPDATE request SET orderno = ? WHERE rowid = ?', [to, draggedRowId])
                 .then(res => {
@@ -219,8 +222,6 @@ export class RequestsPage {
   }
 
   getRequests(type: any) {
-    console.log("request type " + this.requestType);
-    console.log("type " + type);
     return this.requests[type];;
   }
   contentChanged(title: any) {

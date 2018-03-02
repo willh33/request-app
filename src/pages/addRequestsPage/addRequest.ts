@@ -28,9 +28,11 @@ export class AddRequestPage {
   }
 
   saveData() {
-    this.db = this.appData.db;
-    this.db.executeSql('SELECT MAX(orderno) as maxorderno FROM request WHERE request.status = ?', [this.data.status])
+    let me = this;
+    me.db = me.appData.db;
+    me.db.executeSql('SELECT MAX(orderno) as maxorderno FROM request WHERE request.status = ?', [me.data.status])
     .then(res => {
+      console.log("new item status " + me.data.status);
       let maxOrderNo = res.rows.item(0).maxorderno;
       console.log(maxOrderNo);
       console.log("max order no " + res.rows.item(0).maxorderno);
@@ -39,20 +41,20 @@ export class AddRequestPage {
         newOrderNo = 0;
       else
         newOrderNo = maxOrderNo + 1
-      if(this.data.status === "")
-        this.data.status = "todo";
-      this.db.executeSql('INSERT INTO request (title, description, status, orderno, createddt, modifieddt) VALUES(?,?,?,?,?, NULL)',[this.data.title,this.data.description,this.data.status,newOrderNo, new Date()])
+      if(me.data.status === "")
+        me.data.status = "todo";
+        me.db.executeSql('INSERT INTO request (title, description, status, orderno, createddt, modifieddt) VALUES(?,?,?,?,?, NULL)',[me.data.title, me.data.description, me.data.status,newOrderNo, new Date()])
       .then(res => {
         console.log(res);
-        this.toast.show('Data saved', '5000', 'center').subscribe(
+        me.toast.show('Data saved', '5000', 'center').subscribe(
           toast => {
-            this.navCtrl.popToRoot();
+            me.navCtrl.popToRoot();
           }
         );
       })
       .catch(e => {
         console.log(e);
-        this.toast.show(e, '5000', 'center').subscribe(
+        me.toast.show(e, '5000', 'center').subscribe(
           toast => {
             console.log(toast);
           }
