@@ -120,7 +120,6 @@ export class RequestsPage {
         //decrement corresponding rows once
         this.swapAndDecrement(from, to);
       }
-      console.log("request type is in reorder array " + this.requestType);
       let arrayToReorder = this.requests[this.requestType];
       let element = arrayToReorder[from];
       arrayToReorder.splice(indexes.from, 1);
@@ -131,17 +130,11 @@ export class RequestsPage {
   swapAndIncrement(from, to) {
     let me = this;
     //Select the row being moved
-        console.log("increment");
-        console.log("to " + to + " from " + from + " request tyep " + me.requestType);
-      me.db.executeSql('SELECT * FROM request WHERE orderno = ? AND status = ?', [from, me.requestType])
+      me.db.executeSql('SELECT * FROM request WHERE orderno = ? AND status = ? AND parentid = ?', [from, me.requestType, me.parent])
     .then(draggedObject => {
-      console.log("increment");
-      console.log("to " + to + " from " + from + " request tyep " + me.requestType);
-      console.log("dragged object title " + draggedObject.rows.item(0).title);
         //Select all the rows that need updated, All the rows in between to and from
         me.db.executeSql('SELECT * FROM request WHERE orderno >= ? AND orderno < ? and status = ? ORDER BY orderno', [to, from, me.requestType])
         .then(rows => {
-          console.log("rows length in decrement " + rows.rows.length);
             //Update rows in between
             for(let i = 0; i < rows.rows.length; i++){
               let row = rows.rows.item(i);
@@ -154,10 +147,6 @@ export class RequestsPage {
 
             //Update the row that was dragged.
             let draggedRowId = draggedObject.rows.item(0).rowid;
-            console.log("dragged row id is " + draggedRowId);
-            me.db.executeSql("SELECT * FROM request WHERE rowid = ?", [draggedRowId]).then(res => {
-                console.log("res rows length " + res.rows.length + " with row id " + draggedRowId)
-            });
 
             me.db.executeSql('UPDATE request SET orderno = ? WHERE rowid = ?', [to, draggedRowId])
                 .then(res => {
@@ -172,16 +161,11 @@ export class RequestsPage {
   swapAndDecrement(from, to) {
     let me = this;
     //Select the row being moved
-        console.log("Decrement");
-        console.log("to " + to + " from " + from + " request tyep " + me.requestType);
-      me.db.executeSql('SELECT * FROM request WHERE orderno = ? AND status = ?', [from, me.requestType])
+      me.db.executeSql('SELECT * FROM request WHERE orderno = ? AND status = ? AND parentid = ?', [from, me.requestType, me.parent])
     .then(draggedObject => {
-      console.log("Decrement");
-      console.log("to " + to + " from " + from + " request tyep " + me.requestType);
         //Select all the rows that need updated, All the rows in between to and from
         me.db.executeSql('SELECT * FROM request WHERE orderno > ? AND orderno <= ? and status = ? ORDER BY orderno', [from , to, me.requestType])
         .then(rows => {
-          console.log("rows length in decrement " + rows.rows.length);
             //Update rows in between
             for(let i = 0; i < rows.rows.length; i++){
               let row = rows.rows.item(i);
