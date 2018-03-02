@@ -3,7 +3,7 @@
     <button ion-button icon-only (click)="deleteData()" class="minus-circle">
       <ion-icon name="minus-circle"></ion-icon>
     </button>
-    <ion-title>Requests</ion-title>
+    <ion-title>{{title}}</ion-title>
     <button ion-button icon-only (click)="addData()" class="add-circle">
       <ion-icon name="add-circle"></ion-icon>
     </button>
@@ -20,7 +20,7 @@
   </ion-toolbar>
   <ion-list reorder="true" (ionItemReorder)="reorderItems($event)">
       <ion-item-sliding *ngFor="let request of getRequests(requestType); let i=index">{{i+1}}. {{requests}}
-          <ion-item nopadding (click)="editData(request.rowid)">
+          <ion-item nopadding (click)="goToNewRequestPageContext(request.rowid)">
             <span>{{request.title}}</span>
           </ion-item>
       </ion-item-sliding>

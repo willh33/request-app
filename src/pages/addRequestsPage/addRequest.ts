@@ -10,9 +10,10 @@ import { Toast } from '@ionic-native/toast';
 })
 export class AddRequestPage {
 
-  data = { title:"", description:"", status:"In Process", orderno: 0, createddt: new Date(), modifieddt: null};
+  data = { title:"", description:"", parent: 0, status:"In Process", orderno: 0, createddt: new Date(), modifieddt: null};
   db : any;
   statuses = [];
+  parent = 0;
 
 
   constructor(public navCtrl: NavController, public navParams: NavParams,
@@ -21,10 +22,9 @@ export class AddRequestPage {
 
       this.db = this.appData.db;
       this.statuses = this.appData.statuses;
-      console.log("add request page");
-      this.statuses.forEach(status => {
-        console.log("status " + status.title);
-      });
+
+      this.parent = navParams.get('parent');
+      this.data.status = navParams.get('status');
   }
 
   saveData() {
@@ -32,25 +32,23 @@ export class AddRequestPage {
     me.db = me.appData.db;
     me.db.executeSql('SELECT MAX(orderno) as maxorderno FROM request WHERE request.status = ?', [me.data.status])
     .then(res => {
-      console.log("new item status " + me.data.status);
       let maxOrderNo = res.rows.item(0).maxorderno;
-      console.log(maxOrderNo);
-      console.log("max order no " + res.rows.item(0).maxorderno);
       let newOrderNo = 0;
       if(maxOrderNo == null)
         newOrderNo = 0;
       else
         newOrderNo = maxOrderNo + 1
-      if(me.data.status === "")
-        me.data.status = "todo";
-        me.db.executeSql('INSERT INTO request (title, description, status, orderno, createddt, modifieddt) VALUES(?,?,?,?,?, NULL)',[me.data.title, me.data.description, me.data.status,newOrderNo, new Date()])
-      .then(res => {
-        console.log(res);
-        me.toast.show('Data saved', '5000', 'center').subscribe(
-          toast => {
-            me.navCtrl.popToRoot();
-          }
-        );
+
+        me.db.executeSql('INSERT INTO request (title, description, parentid, status, orderno, createddt, modifieddt) VALUES(?,?,?,?,?,?, NULL)',[me.data.title, me.data.description, this.parent, me.data.status,newOrderNo, new Date()])
+            .then(res => {
+                console.log(res);
+                me.navCtrl.pop();
+                /**me.toast.show('Data saved', '5000', 'center').subscribe(
+                    toast => {
+                        console.log("navctrl pop");
+                        me.navCtrl.pop();
+                    }
+                );**/
       })
       .catch(e => {
         console.log(e);

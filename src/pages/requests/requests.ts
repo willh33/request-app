@@ -15,18 +15,23 @@ export class RequestsPage {
   icons: string[];
   requests = {'In Process': []};
   totalRequests : 0;
-  requestType: "In Process";
+  requestType: "";
   db : any;
   statuses = [];
+  parent = 0;
+  title = "Requests";
 
 
   constructor(public navCtrl: NavController, public navParams: NavParams, private sqlite: SQLite,  private platform: Platform, private appData: AppData) {
-    this.db = this.appData.db;
-    this.statuses = this.appData.statuses;
-    console.log("requset constructor");
-    this.statuses.forEach(status => {
-      this.requests[status.title] = [];
-      console.log("status in constructor " + status.title);
+      this.db = this.appData.db;
+      this.statuses = this.appData.statuses;
+      if(navParams.get("parent") !== undefined)
+          this.parent = navParams.get("parent");
+      console.log("this.parent is " + this.parent);
+      this.statuses.forEach(status => {
+          if(this.requestType == undefined)
+              this.requestType = status.title;
+          this.requests[status.title] = [];
     });
   }
 
@@ -68,7 +73,16 @@ export class RequestsPage {
   retrieveRequests() {
     let me = this;
     console.log("retrieve requests");
-    me.db.executeSql('SELECT * FROM request order by orderno', {})
+    if(this.parent === 0)
+      this.title = "Requests";
+    else {
+        me.db.executeSql('SELECT * FROM request WHERE rowid = ? ORDER BY orderno', [me.parent]).then(res => {
+            console.log("got inside get parent row " + res.rows.length);
+            if(res.rows.length > 0)
+                this.title = res.rows.item(0).title;
+      });
+    }
+    me.db.executeSql('SELECT * FROM request WHERE parentid = ? ORDER BY orderno', [me.parent])
     .then(res => {
       console.log(res.rows.length + " res rows length");
       for(var i=0; i<res.rows.length; i++) {
@@ -142,7 +156,7 @@ export class RequestsPage {
             let draggedRowId = draggedObject.rows.item(0).rowid;
             console.log("dragged row id is " + draggedRowId);
             me.db.executeSql("SELECT * FROM request WHERE rowid = ?", [draggedRowId]).then(res => {
-                console.log("res rows length " + res.rows.length + " with row id " + draggedRowId) 
+                console.log("res rows length " + res.rows.length + " with row id " + draggedRowId)
             });
 
             me.db.executeSql('UPDATE request SET orderno = ? WHERE rowid = ?', [to, draggedRowId])
@@ -192,12 +206,15 @@ export class RequestsPage {
 
 
   addData() {
-    this.navCtrl.push(AddRequestPage);
+    this.navCtrl.push(AddRequestPage,{
+      parent: this.parent,
+      status: this.requestType
+    });
   }
 
-  editData(rowid) {
-    this.navCtrl.push(EditRequestPage, {
-      rowid:rowid
+  goToNewRequestPageContext(rowid) {
+    this.navCtrl.push(RequestsPage, {
+      parent:rowid
     });
   }
 
