@@ -131,18 +131,21 @@ export class RequestsPage {
     let me = this;
     //Select the row being moved
       me.db.executeSql('SELECT * FROM request WHERE orderno = ? AND status = ? AND parentid = ?', [from, me.requestType, me.parent])
-    .then(draggedObject => {
+          .then(draggedObject => {
+              console.log("dragged object length " + draggedObject.rows.length);
         //Select all the rows that need updated, All the rows in between to and from
-        me.db.executeSql('SELECT * FROM request WHERE orderno >= ? AND orderno < ? and status = ? ORDER BY orderno', [to, from, me.requestType])
+              me.db.executeSql('SELECT * FROM request WHERE orderno >= ? AND orderno < ? and status = ? AND parentid = ? ORDER BY orderno', [to, from, me.requestType, me.parent])
         .then(rows => {
             //Update rows in between
+            console.log("rows to update " + rows.rows.length);
             for(let i = 0; i < rows.rows.length; i++){
-              let row = rows.rows.item(i);
-              let rowid = row.rowid;
+                let row = rows.rows.item(i);
+                let rowid = row.rowid;
+                console.log("update row with title " + row.title);
 
-              me.db.executeSql('UPDATE request SET orderno = orderno + 1 WHERE rowid = ?', [rowid])
-                .then(res => console.log(res))
-                .catch(e => alert(e));
+                me.db.executeSql('UPDATE request SET orderno = orderno + 1 WHERE rowid = ?', [rowid])
+                    .then(res => console.log(res))
+                    .catch(e => alert(e));
             }
 
             //Update the row that was dragged.
@@ -164,7 +167,7 @@ export class RequestsPage {
       me.db.executeSql('SELECT * FROM request WHERE orderno = ? AND status = ? AND parentid = ?', [from, me.requestType, me.parent])
     .then(draggedObject => {
         //Select all the rows that need updated, All the rows in between to and from
-        me.db.executeSql('SELECT * FROM request WHERE orderno > ? AND orderno <= ? and status = ? ORDER BY orderno', [from , to, me.requestType])
+        me.db.executeSql('SELECT * FROM request WHERE orderno > ? AND orderno <= ? and status = ? AND parentid = ? ORDER BY orderno', [from , to, me.requestType, me.parent])
         .then(rows => {
             //Update rows in between
             for(let i = 0; i < rows.rows.length; i++){
