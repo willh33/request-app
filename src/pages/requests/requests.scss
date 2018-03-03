@@ -20,4 +20,11 @@ page-requests {
   .add-circle {
     float: right;
   }
+  .request-navbar .toolbar-content, .request-navbar .toolbar-content-md {
+      display: flex;
+  }
+  .button-md {
+      background-color: transparent;
+      color: black;
+  }
 }

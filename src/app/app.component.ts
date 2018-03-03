@@ -52,7 +52,8 @@ export class MyApp {
 
   }
 
-  initializeApp() {
+    initializeApp() {
+        let me = this;
     this.platform.ready().then(() => {
       //Create the version table
       this.callDatabaseMigrations()
@@ -60,7 +61,8 @@ export class MyApp {
           // this.rootPage = RequestsPage;
       })
       .catch(function(error) {
-        console.error(JSON.stringify(error));
+          console.error(JSON.stringify(error));
+          me.rootPage = RequestsPage;
       });
       // Okay, so the platform is ready and our plugins are available.
       // Here you can do any higher level native things you might need.
