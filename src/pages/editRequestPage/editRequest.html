@@ -12,9 +12,7 @@
     <ion-item>
     <ion-label>Status</ion-label>
     <ion-select [(ngModel)]="data.status" name="status" required="">
-      <ion-option value="todo">To Do</ion-option>
-      <ion-option value="doing">Doing</ion-option>
-      <ion-option value="done">Done</ion-option>
+      <ion-option *ngFor="let status of statuses">{{status.title}}</ion-option>
     </ion-select>
     </ion-item>
     <ion-item>
@@ -25,9 +23,9 @@
       <ion-label>Description</ion-label>
       <ion-input type="text" placeholder="Description" [(ngModel)]="data.description" name="description" required="" ></ion-input>
     </ion-item>
-    <ion-item>
+    <!-- <ion-item>
       <ion-label>Order No: {{ data.orderno }}</ion-label>
-    </ion-item>
+    </ion-item> -->
     <ion-input type="hidden" [(ngModel)]="data.rowid" name="rowid"></ion-input>
     <ion-input type="hidden" [(ngModel)]="data.modifieddt" name="modifieddt"></ion-input>
     <!-- <ion-input type="hidden" [(ngModel)]="data.orderno" name="orderno"></ion-input> -->

@@ -4,7 +4,7 @@
       <ion-icon name="minus-circle"></ion-icon>
     </button>
     <ion-title>{{title}}</ion-title>
-    <button ion-button icon-only (click)="addData()" class="settings-button">
+    <button ion-button icon-only (click)="presentPopover($event)" class="settings-button">
       <ion-icon name="more"></ion-icon>
     </button>
   </ion-navbar>
@@ -14,15 +14,17 @@
   <ion-toolbar no-border-top>
     <ion-segment [(ngModel)]="requestType">
       <ion-segment-button *ngFor="let status of statuses" [ngStyle]="{'color': status.color}" value="{{status.title}}" (tap)="contentChanged(status.title)">
-        {{status.title}}
+        {{status.abbreviation}} ({{statusCount[status.title]}})
       </ion-segment-button>
     </ion-segment>
   </ion-toolbar>
-  <ion-list reorder="true" (ionItemReorder)="reorderItems($event)">
+  <ion-list reorder="true" (ionItemReorder)="reorderItems($event)" can-swipe="true">
       <ion-item-sliding *ngFor="let request of getRequests(requestType); let i=index">{{i+1}}. {{requests}}
           <ion-item nopadding (click)="goToNewRequestPageContext(request.rowid)">
             <span>{{request.title}}</span>
           </ion-item>
+          <ion-item-options side="right" (ionSwipe)="changeStatusLeft(request)"></ion-item-options>
+          <ion-item-options side="left" (ionSwipe)="changeStatusRight(request)"></ion-item-options>
       </ion-item-sliding>
   </ion-list>
 </ion-content>

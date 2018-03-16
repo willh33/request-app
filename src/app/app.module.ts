@@ -13,6 +13,7 @@ import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { AddRequestPage } from '../pages/addRequestsPage/addRequest';
 import { EditRequestPage } from '../pages/editRequestPage/editRequest';
+import { PopoverPage } from '../pages/popoverPage/popoverPage';
 
 @NgModule({
   declarations: [
@@ -20,7 +21,8 @@ import { EditRequestPage } from '../pages/editRequestPage/editRequest';
     GroupsPage,
     RequestsPage,
     AddRequestPage,
-    EditRequestPage
+      EditRequestPage,
+      PopoverPage
   ],
   imports: [
     BrowserModule,
@@ -32,7 +34,8 @@ import { EditRequestPage } from '../pages/editRequestPage/editRequest';
     GroupsPage,
     RequestsPage,
     AddRequestPage,
-    EditRequestPage
+      EditRequestPage,
+      PopoverPage
   ],
   providers: [
     StatusBar,

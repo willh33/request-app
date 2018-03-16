@@ -30,7 +30,7 @@ export class AddRequestPage {
   saveData() {
     let me = this;
     me.db = me.appData.db;
-      me.db.executeSql('SELECT MAX(orderno) as maxorderno FROM request WHERE request.status = ? AND request.parentid = ?', [me.data.status, me.parent])
+    me.db.executeSql('SELECT MAX(orderno) as maxorderno FROM request WHERE request.status = ? AND request.parentid = ?', [me.data.status, me.parent])
     .then(res => {
       let maxOrderNo = res.rows.item(0).maxorderno;
       let newOrderNo = 0;

@@ -1,3 +1,4 @@
+import { StatusBar } from '@ionic-native/status-bar';
 import { Component } from '@angular/core';
 import { NavController, reorderArray, NavParams } from 'ionic-angular';
 import { SQLite, SQLiteObject } from '@ionic-native/sqlite';
@@ -5,6 +6,8 @@ import { AddRequestPage } from '../addRequestsPage/addRequest';
 import { Platform } from 'ionic-angular';
 import { EditRequestPage } from '../editRequestPage/editRequest';
 import { AppData } from '../../providers/app-data';
+import { PopoverController } from 'ionic-angular';
+import { PopoverPage } from '../popoverPage/popoverPage'
 
 @Component({
   selector: 'page-requests',
@@ -18,21 +21,96 @@ export class RequestsPage {
   requestType: "";
   db : any;
   statuses = [];
-  parent = 0;
+  parent = -1;
   title = "Requests";
+  statusCount = {};
 
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, private sqlite: SQLite,  private platform: Platform, private appData: AppData) {
-      this.db = this.appData.db;
-      this.statuses = this.appData.statuses;
-      if(navParams.get("parent") !== undefined)
-          this.parent = navParams.get("parent");
-      console.log("this.parent is " + this.parent);
-      this.statuses.forEach(status => {
-          if(this.requestType == undefined)
-              this.requestType = status.title;
-          this.requests[status.title] = [];
+  constructor(public navCtrl: NavController, public navParams: NavParams, private sqlite: SQLite,  private platform: Platform, private appData: AppData, private popoverCtrl: PopoverController) {
+    this.db = this.appData.db;
+    this.statuses = this.appData.statuses;
+    if(navParams.get("parent") !== undefined)
+        this.parent = navParams.get("parent");
+    console.log("this.parent is " + this.parent);
+    this.statuses.forEach(status => {
+        if(this.requestType == undefined)
+            this.requestType = status.title;
+        this.requests[status.title] = [];
+        this.statusCount[status.title] = 0;
     });
+  }
+
+  presentPopover(myEvent) {
+    let popover = this.popoverCtrl.create(PopoverPage, {
+        parent: this.parent,
+        status: this.requestType
+      },
+      {
+        cssClass: 'popover-div'
+      }
+    );
+    popover.present({
+      ev: myEvent
+    });
+  }
+
+  changeStatusLeft(request) {
+    let me = this;
+
+    let currentStatusIndex = me.statuses.findIndex(status => status.title == this.requestType);
+
+    if(currentStatusIndex < me.statuses.length)
+    {
+      let leftStatus = me.statuses[currentStatusIndex - 1];
+      me.appData.getMaxOrderNo(leftStatus.title, this.parent)
+        .then(function(res) {
+          console.log("new order number is " + res);
+          console.log("right status " + leftStatus);
+          me.db.executeSql('UPDATE request SET status=?, orderno=?, modifieddt=? WHERE rowid=?',[leftStatus.title, res, new Date(), request.rowid])
+          .then(res => {
+            me.appData.updateOrderNumbersUnder(request.status, request.parent, request.orderno)
+              .then(function(res) {
+                me.resetRequests();
+              });
+          });
+        });
+    }
+  }
+
+  changeStatusRight(request) {
+    let me = this;
+
+    let currentStatusIndex = me.statuses.findIndex(status => status.title == this.requestType);
+
+    if(currentStatusIndex < me.statuses.length)
+    {
+      let rightStatus = me.statuses[currentStatusIndex + 1];
+      me.appData.getMaxOrderNo(rightStatus.title, this.parent)
+        .then(function(res) {
+          console.log("new order number is " + res);
+          console.log("right status " + rightStatus);
+          me.db.executeSql('UPDATE request SET status=?, orderno=?, modifieddt=? WHERE rowid=?',[rightStatus.title, res, new Date(), request.rowid])
+          .then(res => {
+            me.appData.updateOrderNumbersUnder(request.status, request.parent, request.orderno)
+              .then(function(res) {
+                me.resetRequests();
+              });
+          });
+        });
+    }
+  }
+
+  resetRequests() {
+    //set all the setup data
+    this.db = this.appData.db;
+    this.statuses = this.appData.statuses;
+    this.statuses.forEach(status => {
+      if(this.requestType == undefined)
+          this.requestType = status.title;
+      this.requests[status.title] = [];
+      this.statusCount[status.title] = 0;
+    });
+    this.retrieveRequests();
   }
 
   itemTapped(event, item) {
@@ -53,20 +131,7 @@ export class RequestsPage {
   ionViewWillEnter() {
     console.log("will enter ");
     this.platform.ready().then(() => {
-      console.log("platform ready");
-      //Once the platform is ready call a method in app data that gets teh statuses, It will check if the statuses are already inserted
-      //and only insert them if they are not, it will return the statuses, to be used here.
-      this.db = this.appData.db;
-
-      console.log("before selecting statuses");
-
-      this.statuses = this.appData.statuses;
-      this.statuses.forEach(status => {
-        this.requests[status.title] = [];
-        console.log("status in constructor " + status.title);
-      });
-      console.log("platform ready");
-      this.retrieveRequests();
+      this.resetRequests();
     });
   }
 
@@ -100,7 +165,8 @@ export class RequestsPage {
               orderno:item.orderno,
               createddt:item.createddt,
               modifieddt:item.modifieddt
-            })
+            });
+            this.statusCount[item.status] = this.statusCount[item.status] + 1;
         }
       }
       me.totalRequests = res.rows.length;
@@ -205,11 +271,11 @@ export class RequestsPage {
     });
   }
 
-  // editData(rowid) {
-  //   this.navCtrl.push(EditDataPage, {
-  //     rowid:rowid
-  //   });
-  // }
+  editData(rowid) {
+    this.navCtrl.push(EditRequestPage, {
+      rowid: rowid
+    });
+  }
 
   deleteData(rowid) {
     this.sqlite.create({
