@@ -10,47 +10,47 @@ import { Toast } from '@ionic-native/toast';
 })
 export class EditRequestPage {
 
-  data = { rowid:0, title:"", description:"", parent: "-1", status:"Doing", orderno: 0, createddt: new Date(), modifieddt: null};
-  oldData = { rowid:0, title:"", description:"",  parent: "-1", status:"Doing", orderno: 0, createddt: new Date(), modifieddt: null};
+  data = { id:0, title:"", description:"", parent: "-1", status:"Doing", order_no: 0, created_dt: new Date(), modified_dt: null};
+  oldData = { id:0, title:"", description:"",  parent: "-1", status:"Doing", order_no: 0, created_dt: new Date(), modified_dt: null};
   db : any;
-  rowid :any;
+  id :any;
   statuses = [];
 
   constructor(public navCtrl: NavController,
     public navParams: NavParams,
     private sqlite: SQLite, private appData: AppData,
     private toast: Toast) {
-      console.log(" row id " + navParams.get("rowid"));
+      console.log(" row id " + navParams.get("id"));
       this.db = this.appData.db;
       this.statuses = this.appData.statuses;
-      this.rowid = navParams.get("rowid");
-      this.getCurrentData(this.rowid);
+      this.id = navParams.get("id");
+      this.getCurrentData(this.id);
   }
 
-  getCurrentData(rowid) {
+  getCurrentData(id) {
     let me = this;
-    me.db.executeSql('SELECT * FROM request WHERE rowid=?', [rowid])
+    me.db.executeSql('SELECT * FROM request WHERE id=?', [id])
       .then(res => {
         if(res.rows.length > 0) {
           let item = res.rows.item(0);
-          console.log("id " + item.rowid);
-          this.data.rowid = item.rowid;
+          console.log("id " + item.id);
+          this.data.id = item.id;
           this.data.title = item.title;
           this.data.description = item.description;
           this.data.status = item.status;
-          this.data.orderno = item.orderno;
-          this.data.createddt = item.createddt;
-          this.data.modifieddt = new Date();
+          this.data.order_no = item.order_no;
+          this.data.created_dt = item.created_dt;
+          this.data.modified_dt = new Date();
           this.data.parent = item.parentid;
 
 
-          this.oldData.rowid = item.rowid;
+          this.oldData.id = item.id;
           this.oldData.title = item.title;
           this.oldData.description = item.description;
           this.oldData.status = item.status;
-          this.oldData.orderno = item.orderno;
-          this.oldData.createddt = item.createddt;
-          this.oldData.modifieddt = new Date();
+          this.oldData.order_no = item.order_no;
+          this.oldData.created_dt = item.created_dt;
+          this.oldData.modified_dt = new Date();
           this.oldData.parent = item.parentid;
         }
       })
@@ -68,59 +68,47 @@ export class EditRequestPage {
     let me = this;
       if(me.oldData.status === me.data.status)
       {
-        me.callUdpate(me.data.orderno);
+        me.callUdpate(me.data.order_no);
       }
       else
       {
-        // me.db.executeSql('SELECT MAX(orderno) as maxorderno FROM request WHERE request.status = ? AND request.parentid = ?', [me.data.status, me.data.parent])
+        // me.db.executeSql('SELECT MAX(order_no) as maxorder_no FROM request WHERE request.status = ? AND request.parentid = ?', [me.data.status, me.data.parent])
         //   .then(res => {
         //     console.log("parent " + me.data.parent + " my new data status " + me.data.status);
-        //     let maxOrderNo = res.rows.item(0).maxorderno;
-        //     let newOrderNo = 0;
-        //     if(maxOrderNo == null)
-        //       newOrderNo = 0;
+        //     let maxorder_no = res.rows.item(0).maxorder_no;
+        //     let neworder_no = 0;
+        //     if(maxorder_no == null)
+        //       neworder_no = 0;
         //     else
-        //       newOrderNo = maxOrderNo + 1
-        //     me.updateOrderNumbers(me.oldData.status, me.oldData.parent, me.oldData.orderno, newOrderNo);
+        //       neworder_no = maxorder_no + 1
+        //     me.updateOrderNumbers(me.oldData.status, me.oldData.parent, me.oldData.order_no, neworder_no);
         //   })
         //   .catch(e => alert(e));
-        me.appData.getMaxOrderNo(me.data.status, me.data.parent)
+        me.appData.getMaxorderNo(me.data.status, me.data.parent)
           .then(function(res) {
-            me.updateOrderNumbers(me.oldData.status, me.oldData.parent, me.oldData.orderno, res);
+            me.updateOrderNumbers(me.oldData.status, me.oldData.parent, me.oldData.order_no, res);
           });
 
       }
     }
 
-    updateOrderNumbers(status, parent, oldOrderNo, newOrderNo) {
-      console.log("old order no " + oldOrderNo + " new order no " + newOrderNo);
+    updateOrderNumbers(status, parent, oldorder_no, neworder_no) {
+      console.log("old order no " + oldorder_no + " new order no " + neworder_no);
       console.log("old status " + this.oldData.status + " new status " + this.data.status);
       let me = this;
-      me.db.executeSql('SELECT * FROM request WHERE request.status = ? AND request.parentid = ? AND request.orderno > ?', [status, parent, oldOrderNo])
-      .then(res => {
-        console.log("got all the order numbers that need updated");
-        let rowids = [];
-        for(var i = 0; i < res.rows.length; i++)
-        {
-          let item = res.rows.item(i);
-          rowids.push(item.rowid);
-        }
-        console.log('row ids that need updated are ' + rowids);
-        me.db.executeSql("UPDATE request SET orderno = orderno - 1 WHERE rowid IN (?)", [rowids])
+      me.appData.updateOrderNumbersUnder(status, parent, oldorder_no)
         .then(res => {
-          console.log("udpated the order numbers rowids are " + rowids);
-          me.callUdpate(newOrderNo);
-        });
+          me.callUdpate(neworder_no);
       });
     }
 
-    callUdpate(orderno) {
+    callUdpate(order_no) {
 
     //It appears to update good other than the order number doesnt appear to be set to the max order number of the new status.
     let me = this;
-    me.db.executeSql('UPDATE request SET title=?,description=?,status=?, orderno=?, modifieddt=? WHERE rowid=?',[this.data.title,this.data.description,this.data.status, orderno,new Date(), this.rowid])
+    me.db.executeSql('UPDATE request SET title=?,description=?,status=?, order_no=?, modified_dt=? WHERE id=?',[this.data.title,this.data.description,this.data.status, order_no,new Date(), this.id])
       .then(res => {
-        console.log("udpated the row being edited " + this.rowid);
+        console.log("udpated the row being edited " + this.id);
         me.navCtrl.pop();
         // me.toast.show('Data updated', '5000', 'center').subscribe(
         //   toast => {

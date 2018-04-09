@@ -25,13 +25,16 @@ export class MyApp {
   version1 = {
     versionNumber: 1,
     queries: [
-      "CREATE TABLE IF NOT EXISTS status (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, abbreviation, color TEXT, createddt TEXT, modifieddt TEXT)",
-      "CREATE TABLE IF NOT EXISTS request (rowid INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, description TEXT, parentid, status TEXT, orderno INTEGER, createddt TEXT, modifieddt TEXT)"
-      // "INSERT INTO status (title, color, createddt) VALUES('To Do', " + "'#e13838', '" + new Date() + "')",
-      // "INSERT INTO status (title, color, createddt) VALUES('In Process', " + "'#e13838', '" + new Date() + "')",
-      // "INSERT INTO status (title, color, createddt) VALUES('Review', " + "'#e13838', '" + new Date() + "')",
-      // "INSERT INTO status (title, color, createddt) VALUES('Final Review', " + "'#e13838', '" + new Date() + "')",
-      // "INSERT INTO status (title, color, createddt) VALUES('Done', " + "'#e13838', '" + new Date() + "')"
+      "CREATE TABLE IF NOT EXISTS status (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, abbreviation TEXT, color TEXT, created_dt DATE, modified_dt DATE)",
+      "CREATE TABLE IF NOT EXISTS request (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, description TEXT, parent_id INTEGER, status TEXT, order_no INTEGER, created_dt DATE, modified_dt DATE)"
+    ]
+  };
+
+  version2 = {
+    versionNumber: 2,
+    queries: [
+      "CREATE TABLE IF NOT EXISTS group (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, description TEXT, created_dt DATE, modified_dt DATE)",
+      "CREATE TABLE IF NOT EXISTS person (id INTEGER PRIMARY KEY AUTOINCREMENT, first_name TEXT, middle_name TEXT, last_name TEXT, created_dt DATE, modified_dt DATE)"
     ]
   };
 

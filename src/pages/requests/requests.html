@@ -1,7 +1,7 @@
-<ion-header>
+<ion-header id="request-header">
   <ion-navbar class="request-navbar">
-    <button ion-button icon-only (click)="deleteData()" class="minus-circle">
-      <ion-icon name="minus-circle"></ion-icon>
+    <button ion-button [menuToggle]="">
+      <ion-icon name="menu"></ion-icon>
     </button>
     <ion-title>{{title}}</ion-title>
     <button ion-button icon-only (click)="presentPopover($event)" class="settings-button">
@@ -20,7 +20,7 @@
   </ion-toolbar>
   <ion-list reorder="true" (ionItemReorder)="reorderItems($event)" can-swipe="true">
       <ion-item-sliding *ngFor="let request of getRequests(requestType); let i=index">{{i+1}}. {{requests}}
-          <ion-item nopadding (click)="goToNewRequestPageContext(request.rowid)">
+          <ion-item nopadding (click)="goToNewRequestPageContext(request.id)">
             <span>{{request.title}}</span>
           </ion-item>
           <ion-item-options side="right" (ionSwipe)="changeStatusLeft(request)"></ion-item-options>

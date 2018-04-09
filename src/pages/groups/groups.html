@@ -1,23 +1,30 @@
 <ion-header>
-  <ion-navbar>
-    <button ion-button menuToggle>
-      <ion-icon name="menu"></ion-icon>
+  <ion-navbar class="request-navbar">
+    <button ion-button icon-only (click)="deleteData()" class="minus-circle">
+      <ion-icon name="minus-circle"></ion-icon>
     </button>
-    <ion-title>Groups</ion-title>
+    <ion-title>{{title}}</ion-title>
+    <button ion-button icon-only (click)="presentPopover($event)" class="settings-button">
+      <ion-icon name="more"></ion-icon>
+    </button>
   </ion-navbar>
 </ion-header>
 
 <ion-content>
-  <ion-list>
-    <button ion-item *ngFor="let item of items" (click)="itemTapped($event, item)">
-      <ion-icon [name]="item.icon" item-start></ion-icon>
-      {{item.title}}
-      <div class="item-note" item-end>
-        {{item.note}}
-      </div>
-    </button>
+  <ion-toolbar no-border-top>
+    <ion-segment [(ngModel)]="requestType">
+      <ion-segment-button *ngFor="let status of statuses" [ngStyle]="{'color': status.color}" value="{{status.title}}" (tap)="contentChanged(status.title)">
+        {{status.abbreviation}} ({{statusCount[status.title]}})
+      </ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
+  <ion-list reorder="true" (ionItemReorder)="reorderItems($event)" can-swipe="true">
+      <ion-item-sliding *ngFor="let request of getRequests(requestType); let i=index">{{i+1}}. {{requests}}
+          <ion-item nopadding (click)="goToNewRequestPageContext(request.id)">
+            <span>{{request.title}}</span>
+          </ion-item>
+          <ion-item-options side="right" (ionSwipe)="changeStatusLeft(request)"></ion-item-options>
+          <ion-item-options side="left" (ionSwipe)="changeStatusRight(request)"></ion-item-options>
+      </ion-item-sliding>
   </ion-list>
-  <div *ngIf="selectedItem" padding>
-    You navigated here from <b>{{selectedItem.title}}</b>
-  </div>
 </ion-content>

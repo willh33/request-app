@@ -32,6 +32,7 @@ export class RequestsPage {
     if(navParams.get("parent") !== undefined)
         this.parent = navParams.get("parent");
     console.log("this.parent is " + this.parent);
+    this.requests = {'In Process': []};
     this.statuses.forEach(status => {
         if(this.requestType == undefined)
             this.requestType = status.title;
@@ -62,13 +63,13 @@ export class RequestsPage {
     if(currentStatusIndex < me.statuses.length)
     {
       let leftStatus = me.statuses[currentStatusIndex - 1];
-      me.appData.getMaxOrderNo(leftStatus.title, this.parent)
+      me.appData.getMaxorderNo(leftStatus.title, this.parent)
         .then(function(res) {
           console.log("new order number is " + res);
-          console.log("right status " + leftStatus);
-          me.db.executeSql('UPDATE request SET status=?, orderno=?, modifieddt=? WHERE rowid=?',[leftStatus.title, res, new Date(), request.rowid])
+          console.log("left status " + leftStatus);
+          me.db.executeSql('UPDATE request SET status=?, order_no=?, modified_dt=? WHERE id=?',[leftStatus.title, res, new Date(), request.id])
           .then(res => {
-            me.appData.updateOrderNumbersUnder(request.status, request.parent, request.orderno)
+            me.appData.updateOrderNumbersUnder(request.status, me.parent, request.order_no)
               .then(function(res) {
                 me.resetRequests();
               });
@@ -80,18 +81,18 @@ export class RequestsPage {
   changeStatusRight(request) {
     let me = this;
 
-    let currentStatusIndex = me.statuses.findIndex(status => status.title == this.requestType);
+    let currentStatusIndex = me.statuses.findIndex(status => status.title == me.requestType);
 
     if(currentStatusIndex < me.statuses.length)
     {
       let rightStatus = me.statuses[currentStatusIndex + 1];
-      me.appData.getMaxOrderNo(rightStatus.title, this.parent)
+      me.appData.getMaxorderNo(rightStatus.title, me.parent)
         .then(function(res) {
           console.log("new order number is " + res);
-          console.log("right status " + rightStatus);
-          me.db.executeSql('UPDATE request SET status=?, orderno=?, modifieddt=? WHERE rowid=?',[rightStatus.title, res, new Date(), request.rowid])
+          console.log("right status " + rightStatus.title);
+          me.db.executeSql('UPDATE request SET status=?, order_no=?, modified_dt=? WHERE id=?',[rightStatus.title, res, new Date(), request.id])
           .then(res => {
-            me.appData.updateOrderNumbersUnder(request.status, request.parent, request.orderno)
+            me.appData.updateOrderNumbersUnder(request.status, me.parent, request.order_no)
               .then(function(res) {
                 me.resetRequests();
               });
@@ -104,9 +105,11 @@ export class RequestsPage {
     //set all the setup data
     this.db = this.appData.db;
     this.statuses = this.appData.statuses;
+    this.requests = {'In Process': []};
     this.statuses.forEach(status => {
       if(this.requestType == undefined)
           this.requestType = status.title;
+      console.log("just before resetting requests " + status.title);
       this.requests[status.title] = [];
       this.statusCount[status.title] = 0;
     });
@@ -137,34 +140,31 @@ export class RequestsPage {
 
   retrieveRequests() {
     let me = this;
-    console.log("retrieve requests");
     if(this.parent === 0)
       this.title = "Requests";
     else {
-        me.db.executeSql('SELECT * FROM request WHERE rowid = ? ORDER BY orderno', [me.parent]).then(res => {
-            console.log("got inside get parent row " + res.rows.length);
+        me.db.executeSql('SELECT * FROM request WHERE id = ? ORDER BY order_no', [me.parent]).then(res => {
             if(res.rows.length > 0)
                 this.title = res.rows.item(0).title;
       });
     }
-    me.db.executeSql('SELECT * FROM request WHERE parentid = ? ORDER BY orderno', [me.parent])
+    me.db.executeSql('SELECT * FROM request WHERE parent_id = ? ORDER BY order_no', [me.parent])
     .then(res => {
-      console.log(res.rows.length + " res rows length");
       for(var i=0; i<res.rows.length; i++) {
         let item = res.rows.item(i);
         console.log("status ********* " + item.status + " title " +item.title);
-        console.log("order number " + item.orderno);
+        console.log("order number " + item.order_no);
         if(me.requests[item.status])
         {
           me.requests[item.status].push(
             {
-              rowid:item.rowid,
+              id:item.id,
               title:item.title,
               description:item.description,
               status:item.status,
-              orderno:item.orderno,
+              order_no:item.order_no,
               createddt:item.createddt,
-              modifieddt:item.modifieddt
+              modified_dt:item.modified_dt
             });
             this.statusCount[item.status] = this.statusCount[item.status] + 1;
         }
@@ -196,28 +196,28 @@ export class RequestsPage {
   swapAndIncrement(from, to) {
     let me = this;
     //Select the row being moved
-      me.db.executeSql('SELECT * FROM request WHERE orderno = ? AND status = ? AND parentid = ?', [from, me.requestType, me.parent])
+      me.db.executeSql('SELECT * FROM request WHERE order_no = ? AND status = ? AND parent_id = ?', [from, me.requestType, me.parent])
           .then(draggedObject => {
               console.log("dragged object length " + draggedObject.rows.length);
         //Select all the rows that need updated, All the rows in between to and from
-              me.db.executeSql('SELECT * FROM request WHERE orderno >= ? AND orderno < ? and status = ? AND parentid = ? ORDER BY orderno', [to, from, me.requestType, me.parent])
+              me.db.executeSql('SELECT * FROM request WHERE order_no >= ? AND order_no < ? and status = ? AND parent_id = ? ORDER BY order_no', [to, from, me.requestType, me.parent])
         .then(rows => {
             //Update rows in between
             console.log("rows to update " + rows.rows.length);
             for(let i = 0; i < rows.rows.length; i++){
                 let row = rows.rows.item(i);
-                let rowid = row.rowid;
+                let id = row.id;
                 console.log("update row with title " + row.title);
 
-                me.db.executeSql('UPDATE request SET orderno = orderno + 1 WHERE rowid = ?', [rowid])
+                me.db.executeSql('UPDATE request SET order_no = order_no + 1 WHERE id = ?', [id])
                     .then(res => console.log(res))
                     .catch(e => alert(e));
             }
 
             //Update the row that was dragged.
-            let draggedRowId = draggedObject.rows.item(0).rowid;
+            let draggedid = draggedObject.rows.item(0).id;
 
-            me.db.executeSql('UPDATE request SET orderno = ? WHERE rowid = ?', [to, draggedRowId])
+            me.db.executeSql('UPDATE request SET order_no = ? WHERE id = ?', [to, draggedid])
                 .then(res => {
                 })
                 .catch(e => alert(e));
@@ -230,25 +230,25 @@ export class RequestsPage {
   swapAndDecrement(from, to) {
     let me = this;
     //Select the row being moved
-      me.db.executeSql('SELECT * FROM request WHERE orderno = ? AND status = ? AND parentid = ?', [from, me.requestType, me.parent])
+      me.db.executeSql('SELECT * FROM request WHERE order_no = ? AND status = ? AND parent_Id = ?', [from, me.requestType, me.parent])
     .then(draggedObject => {
         //Select all the rows that need updated, All the rows in between to and from
-        me.db.executeSql('SELECT * FROM request WHERE orderno > ? AND orderno <= ? and status = ? AND parentid = ? ORDER BY orderno', [from , to, me.requestType, me.parent])
+        me.db.executeSql('SELECT * FROM request WHERE order_no > ? AND order_no <= ? and status = ? AND parent_Id = ? ORDER BY order_no', [from , to, me.requestType, me.parent])
         .then(rows => {
             //Update rows in between
             for(let i = 0; i < rows.rows.length; i++){
               let row = rows.rows.item(i);
-              let rowid = row.rowid;
+              let id = row.id;
 
-              me.db.executeSql('UPDATE request SET orderno = orderno - 1 WHERE rowid = ?', [rowid])
+              me.db.executeSql('UPDATE request SET order_no = order_no - 1 WHERE id = ?', [id])
                 .then(res => console.log(res))
                 .catch(e => alert(e));
             }
 
             //Update the row that was dragged.
-            let draggedRowId = draggedObject.rows.item(0).rowid;
+            let draggedid = draggedObject.rows.item(0).id;
 
-            me.db.executeSql('UPDATE request SET orderno = ? WHERE rowid = ?', [to, draggedRowId])
+            me.db.executeSql('UPDATE request SET order_no = ? WHERE id = ?', [to, draggedid])
                 .then(res => {
                 })
                 .catch(e => alert(e));
@@ -265,24 +265,24 @@ export class RequestsPage {
     });
   }
 
-  goToNewRequestPageContext(rowid) {
+  goToNewRequestPageContext(id) {
     this.navCtrl.push(RequestsPage, {
-      parent:rowid
+      parent:id
     });
   }
 
-  editData(rowid) {
+  editData(id) {
     this.navCtrl.push(EditRequestPage, {
-      rowid: rowid
+      id: id
     });
   }
 
-  deleteData(rowid) {
+  deleteData(id) {
     this.sqlite.create({
       name: 'ionicdb.db',
       location: 'default'
     }).then((db: SQLiteObject) => {
-      db.executeSql('DELETE FROM request WHERE rowid=?', [rowid])
+      db.executeSql('DELETE FROM request WHERE id=?', [id])
       .then(res => {
         console.log(res);
         this.retrieveRequests();

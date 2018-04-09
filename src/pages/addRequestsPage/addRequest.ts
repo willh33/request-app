@@ -10,7 +10,7 @@ import { Toast } from '@ionic-native/toast';
 })
 export class AddRequestPage {
 
-  data = { title:"", description:"", parent: 0, status:"In Process", orderno: 0, createddt: new Date(), modifieddt: null};
+  data = { title:"", description:"", parent: 0, status: "In Process", orderno: 0, createddt: new Date(), modifieddt: null};
   db : any;
   statuses = [];
   parent = 0;
@@ -30,7 +30,7 @@ export class AddRequestPage {
   saveData() {
     let me = this;
     me.db = me.appData.db;
-    me.db.executeSql('SELECT MAX(orderno) as maxorderno FROM request WHERE request.status = ? AND request.parentid = ?', [me.data.status, me.parent])
+    me.db.executeSql('SELECT MAX(order_no) as maxorderno FROM request WHERE request.status = ? AND request.parent_id = ?', [me.data.status, me.parent])
     .then(res => {
       let maxOrderNo = res.rows.item(0).maxorderno;
       let newOrderNo = 0;
@@ -39,7 +39,7 @@ export class AddRequestPage {
       else
         newOrderNo = maxOrderNo + 1
 
-        me.db.executeSql('INSERT INTO request (title, description, parentid, status, orderno, createddt, modifieddt) VALUES(?,?,?,?,?,?, NULL)',[me.data.title, me.data.description, this.parent, me.data.status,newOrderNo, new Date()])
+        me.db.executeSql('INSERT INTO request (title, description, parent_id, status, order_no, created_dt, modified_dt) VALUES(?,?,?,?,?,?, NULL)',[me.data.title, me.data.description, this.parent, me.data.status,newOrderNo, new Date()])
             .then(res => {
                 console.log(res);
                 me.navCtrl.pop();

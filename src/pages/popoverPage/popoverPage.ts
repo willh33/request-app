@@ -8,12 +8,12 @@ import { NavParams, NavController, ViewController, App } from 'ionic-angular';
   template: `
     <ion-list class="popover-list">
        <button ion-item (click)="addRequest()">Add Request</button>
-       <button ion-item (click)="editRequest()" *ngIf="rowid != -1">Edit Request</button>
+       <button ion-item (click)="editRequest()" *ngIf="id != -1">Edit Request</button>
     </ion-list>
   `
 })
 export class PopoverPage {
-  rowid: any;
+  id: any;
   status: any;
 
   constructor(private navParams: NavParams, public navCtrl: NavController, public viewCtrl: ViewController, public app: App) {
@@ -22,7 +22,7 @@ export class PopoverPage {
 
   ngOnInit() {
     if (this.navParams.data) {
-      this.rowid = this.navParams.data.parent;
+      this.id = this.navParams.data.parent;
       this.status = this.navParams.data.status;
     }
   }
@@ -31,7 +31,7 @@ export class PopoverPage {
     // this.viewCtrl.dismiss();
     this.viewCtrl.dismiss().then(() => {
       this.app.getRootNav().push(AddRequestPage,{
-        parent: this.rowid,
+        parent: this.id,
         status: this.status
       });
     });
@@ -40,7 +40,7 @@ export class PopoverPage {
   editRequest() {
     this.viewCtrl.dismiss().then(() => {
       this.app.getRootNav().push(EditRequestPage,{
-        rowid: this.rowid
+        id: this.id
       });
     });
   }

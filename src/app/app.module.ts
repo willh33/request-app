@@ -21,8 +21,9 @@ import { PopoverPage } from '../pages/popoverPage/popoverPage';
     GroupsPage,
     RequestsPage,
     AddRequestPage,
-      EditRequestPage,
-      PopoverPage
+    EditRequestPage,
+    PopoverPage,
+    GroupsPage
   ],
   imports: [
     BrowserModule,
@@ -34,8 +35,9 @@ import { PopoverPage } from '../pages/popoverPage/popoverPage';
     GroupsPage,
     RequestsPage,
     AddRequestPage,
-      EditRequestPage,
-      PopoverPage
+    EditRequestPage,
+    PopoverPage,
+    GroupsPage
   ],
   providers: [
     StatusBar,
