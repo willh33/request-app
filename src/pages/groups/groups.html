@@ -1,7 +1,7 @@
-<ion-header>
-  <ion-navbar class="request-navbar">
-    <button ion-button icon-only (click)="deleteData()" class="minus-circle">
-      <ion-icon name="minus-circle"></ion-icon>
+<ion-header id="request-header">
+  <ion-navbar class="groups-navbar">
+    <button ion-button [menuToggle]="">
+      <ion-icon name="menu"></ion-icon>
     </button>
     <ion-title>{{title}}</ion-title>
     <button ion-button icon-only (click)="presentPopover($event)" class="settings-button">

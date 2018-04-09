@@ -22,7 +22,7 @@ export class GroupsPage {
   db : any;
   statuses = [];
   parent = -1;
-  title = "Requests";
+  title = "Groups";
   statusCount = {};
 
 
@@ -32,6 +32,7 @@ export class GroupsPage {
     if(navParams.get("parent") !== undefined)
         this.parent = navParams.get("parent");
     console.log("this.parent is " + this.parent);
+    this.requests = {'In Process': []};
     this.statuses.forEach(status => {
         if(this.requestType == undefined)
             this.requestType = status.title;
@@ -68,7 +69,7 @@ export class GroupsPage {
           console.log("left status " + leftStatus);
           me.db.executeSql('UPDATE request SET status=?, order_no=?, modified_dt=? WHERE id=?',[leftStatus.title, res, new Date(), request.id])
           .then(res => {
-            me.appData.updateOrderNumbersUnder(request.status, me.parent, request.orderNo)
+            me.appData.updateOrderNumbersUnder(request.status, me.parent, request.order_no)
               .then(function(res) {
                 me.resetRequests();
               });
@@ -88,7 +89,7 @@ export class GroupsPage {
       me.appData.getMaxorderNo(rightStatus.title, me.parent)
         .then(function(res) {
           console.log("new order number is " + res);
-          console.log("right status " + rightStatus);
+          console.log("right status " + rightStatus.title);
           me.db.executeSql('UPDATE request SET status=?, order_no=?, modified_dt=? WHERE id=?',[rightStatus.title, res, new Date(), request.id])
           .then(res => {
             me.appData.updateOrderNumbersUnder(request.status, me.parent, request.order_no)
@@ -104,9 +105,11 @@ export class GroupsPage {
     //set all the setup data
     this.db = this.appData.db;
     this.statuses = this.appData.statuses;
+    this.requests = {'In Process': []};
     this.statuses.forEach(status => {
       if(this.requestType == undefined)
           this.requestType = status.title;
+      console.log("just before resetting requests " + status.title);
       this.requests[status.title] = [];
       this.statusCount[status.title] = 0;
     });
@@ -227,10 +230,10 @@ export class GroupsPage {
   swapAndDecrement(from, to) {
     let me = this;
     //Select the row being moved
-      me.db.executeSql('SELECT * FROM request WHERE order_no = ? AND status = ? AND parent_id = ?', [from, me.requestType, me.parent])
+      me.db.executeSql('SELECT * FROM request WHERE order_no = ? AND status = ? AND parent_Id = ?', [from, me.requestType, me.parent])
     .then(draggedObject => {
         //Select all the rows that need updated, All the rows in between to and from
-        me.db.executeSql('SELECT * FROM request WHERE order_no > ? AND order_no <= ? and status = ? AND parent_id = ? ORDER BY order_no', [from , to, me.requestType, me.parent])
+        me.db.executeSql('SELECT * FROM request WHERE order_no > ? AND order_no <= ? and status = ? AND parent_Id = ? ORDER BY order_no', [from , to, me.requestType, me.parent])
         .then(rows => {
             //Update rows in between
             for(let i = 0; i < rows.rows.length; i++){
