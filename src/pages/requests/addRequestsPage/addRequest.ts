@@ -1,4 +1,4 @@
-import { AppData } from './../../providers/app-data';
+import { AppData } from './../../../providers/app-data';
 import { Component } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
 import { SQLite, SQLiteObject } from '@ionic-native/sqlite';

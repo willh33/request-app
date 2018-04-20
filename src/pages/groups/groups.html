@@ -1,4 +1,4 @@
-<ion-header id="request-header">
+<ion-header id="group-header">
   <ion-navbar class="groups-navbar">
     <button ion-button [menuToggle]="">
       <ion-icon name="menu"></ion-icon>
@@ -12,19 +12,19 @@
 
 <ion-content>
   <ion-toolbar no-border-top>
-    <ion-segment [(ngModel)]="requestType">
+    <ion-segment [(ngModel)]="groupType">
       <ion-segment-button *ngFor="let status of statuses" [ngStyle]="{'color': status.color}" value="{{status.title}}" (tap)="contentChanged(status.title)">
         {{status.abbreviation}} ({{statusCount[status.title]}})
       </ion-segment-button>
     </ion-segment>
   </ion-toolbar>
   <ion-list reorder="true" (ionItemReorder)="reorderItems($event)" can-swipe="true">
-      <ion-item-sliding *ngFor="let request of getRequests(requestType); let i=index">{{i+1}}. {{requests}}
-          <ion-item nopadding (click)="goToNewRequestPageContext(request.id)">
-            <span>{{request.title}}</span>
+      <ion-item-sliding *ngFor="let group of getGroups(groupType); let i=index">{{i+1}}. {{groups}}
+          <ion-item nopadding (click)="goToNewGroupPageContext(group.id)">
+            <span>{{group.title}}</span>
           </ion-item>
-          <ion-item-options side="right" (ionSwipe)="changeStatusLeft(request)"></ion-item-options>
-          <ion-item-options side="left" (ionSwipe)="changeStatusRight(request)"></ion-item-options>
+          <ion-item-options side="right" (ionSwipe)="changeStatusLeft(group)"></ion-item-options>
+          <ion-item-options side="left" (ionSwipe)="changeStatusRight(group)"></ion-item-options>
       </ion-item-sliding>
   </ion-list>
 </ion-content>

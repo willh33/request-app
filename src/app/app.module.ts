@@ -2,7 +2,7 @@ import { AppData } from './../providers/app-data';
 import { Toast } from '@ionic-native/toast';
 import { SQLite } from '@ionic-native/sqlite';
 import { GroupsPage } from '../pages/groups/groups';
-import { RequestsPage } from './../pages/requests/requests';
+import { RequestsPage } from './../pages/requests/requests/requests';
 import { BrowserModule } from '@angular/platform-browser';
 import { ErrorHandler, NgModule } from '@angular/core';
 import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
@@ -11,9 +11,9 @@ import { MyApp } from './app.component';
 
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
-import { AddRequestPage } from '../pages/addRequestsPage/addRequest';
-import { EditRequestPage } from '../pages/editRequestPage/editRequest';
-import { PopoverPage } from '../pages/popoverPage/popoverPage';
+import { AddRequestPage } from '../pages/requests/addRequestsPage/addRequest';
+import { EditRequestPage } from '../pages/requests/editRequestPage/editRequest';
+import { PopoverPage } from '../pages/requests/popoverPage/popoverPage';
 
 @NgModule({
   declarations: [

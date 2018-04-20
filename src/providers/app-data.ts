@@ -18,11 +18,13 @@ export class AppData {
   }
 
   insertStatuses(db: SQLiteObject): Promise<void> {
-    this.db = db;
+    let me = this;
+    me.db = db;
     console.log("insert statuses");
     return db.executeSql('SELECT * FROM status', {}).then(res => {
       if(res.rows.length < 1)
       {
+        console.log("insert in app data ");
         let query = "INSERT INTO status (title, abbreviation, color, created_dt) VALUES"
                                       + "('To Do', 'To Do'," + "'#0644EE', '" + new Date() + "'),"
                                       + "('In Process', 'In Pro', " + "'#460285', '" + new Date() + "'),"
@@ -32,28 +34,30 @@ export class AppData {
         console.log("query is " + query);
         return db.executeSql(query, [])
         .then(res => {
-          return this.getAndSetStatuses(db);
+          return me.getAndSetStatuses(db);
         })
         .catch(e => alert(e));
       }
       else
-        return this.getAndSetStatuses(db);
+        return me.getAndSetStatuses(db);
     }).catch(e => alert(e));
   }
   getAndSetStatuses(db): Promise<void> {
-    this.db = db;
+    let me = this;
+    me.db = db;
     return db.executeSql('SELECT * FROM status', {}).then(res => {
+      me.statuses = [];
       for(var i = 0; i<res.rows.length; i++){
         let status = res.rows.item(i);
         let statusTitle = status.title;
         console.log("status title " + statusTitle);
-        this.statuses.push(status);
+        me.statuses.push(status);
       }
     }).catch(e => alert(e));
   }
-  getMaxorderNo(status, parent): Promise<number | void>{
+  getMaxOrderNo(status, parent, table): Promise<number | void>{
     let me = this;
-    return me.db.executeSql('SELECT MAX(order_no) as maxorderno FROM request WHERE request.status = ? AND request.parent_id = ?', [status, parent])
+    return me.db.executeSql('SELECT MAX(order_no) as maxorderno FROM ' + table + ' WHERE status = ? AND parent_id = ?', [status, parent])
       .then(res => {
         let maxOrderNo = res.rows.item(0).maxorderno;
         let neworderNo = 0;
@@ -67,10 +71,10 @@ export class AppData {
       .catch(e => alert(e));
   }
 
-  updateOrderNumbersUnder(status, parent, oldOrderNo): Promise<void> {
+  updateOrderNumbersUnder(status, parent, oldOrderNo, table): Promise<void> {
     let me = this;
     console.log("status is " + status + " parent " + parent + " oldorder_no " + oldOrderNo);
-    return me.db.executeSql('SELECT * FROM request WHERE request.status = ? AND request.parent_id = ? AND request.order_no > ?', [status, parent, oldOrderNo])
+    return me.db.executeSql('SELECT * FROM ' + table + ' WHERE status = ? AND parent_id = ? AND order_no > ?', [status, parent, oldOrderNo])
     .then(res => {
       console.log("got all the order numbers that need updated");
       let ids = [];
@@ -84,7 +88,7 @@ export class AppData {
       {
         console.log('row ids that need updated are ' + ids);
         let str = '?,'.repeat(ids.length - 1);
-        let query = "UPDATE request SET order_no = order_no - 1 WHERE id IN(" + str + '?)';
+        let query = "UPDATE " + table + " SET order_no = order_no - 1 WHERE id IN(" + str + '?)';
 
         return me.db.executeSql(query, ids);
       }

@@ -6,10 +6,32 @@
 }
 
 .toolbar-background-md {
-  background-color: #ECFEF7;
+  background-color: #454559;
 }
 .scroll-content {
-  background-color: #f8f8ff
+  background-color: #f5f5f5;
+}
+// #82858c
+
+.toolbar-title-md {
+  color: white;
+  text-align: center;
+  font-family:  PT Serif
+}
+
+.bar-button-md {
+  color: white;
+}
+
+.bar-button-md:hover:not(.disable-hover) {
+  color: antiquewhite;
+}
+#statusToolbar>div.toolbar-background-md {
+  background-color: #fdfcfc;
+}
+
+.settings-button {
+  box-shadow: none;
 }
 // App Global Sass
 // --------------------------------------------------

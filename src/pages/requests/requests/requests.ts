@@ -5,7 +5,7 @@ import { SQLite, SQLiteObject } from '@ionic-native/sqlite';
 import { AddRequestPage } from '../addRequestsPage/addRequest';
 import { Platform } from 'ionic-angular';
 import { EditRequestPage } from '../editRequestPage/editRequest';
-import { AppData } from '../../providers/app-data';
+import { AppData } from '../../../providers/app-data';
 import { PopoverController } from 'ionic-angular';
 import { PopoverPage } from '../popoverPage/popoverPage'
 
@@ -24,11 +24,13 @@ export class RequestsPage {
   parent = -1;
   title = "Requests";
   statusCount = {};
+  tableName: 'request';
 
 
   constructor(public navCtrl: NavController, public navParams: NavParams, private sqlite: SQLite,  private platform: Platform, private appData: AppData, private popoverCtrl: PopoverController) {
     this.db = this.appData.db;
     this.statuses = this.appData.statuses;
+    this.tableName = 'request';
     if(navParams.get("parent") !== undefined)
         this.parent = navParams.get("parent");
     console.log("this.parent is " + this.parent);
@@ -63,13 +65,13 @@ export class RequestsPage {
     if(currentStatusIndex < me.statuses.length)
     {
       let leftStatus = me.statuses[currentStatusIndex - 1];
-      me.appData.getMaxorderNo(leftStatus.title, this.parent)
+      me.appData.getMaxOrderNo(leftStatus.title, this.parent, me.tableName)
         .then(function(res) {
           console.log("new order number is " + res);
           console.log("left status " + leftStatus);
           me.db.executeSql('UPDATE request SET status=?, order_no=?, modified_dt=? WHERE id=?',[leftStatus.title, res, new Date(), request.id])
           .then(res => {
-            me.appData.updateOrderNumbersUnder(request.status, me.parent, request.order_no)
+            me.appData.updateOrderNumbersUnder(request.status, me.parent, request.order_no, me.tableName)
               .then(function(res) {
                 me.resetRequests();
               });
@@ -86,13 +88,13 @@ export class RequestsPage {
     if(currentStatusIndex < me.statuses.length)
     {
       let rightStatus = me.statuses[currentStatusIndex + 1];
-      me.appData.getMaxorderNo(rightStatus.title, me.parent)
+      me.appData.getMaxOrderNo(rightStatus.title, me.parent, me.tableName)
         .then(function(res) {
           console.log("new order number is " + res);
           console.log("right status " + rightStatus.title);
           me.db.executeSql('UPDATE request SET status=?, order_no=?, modified_dt=? WHERE id=?',[rightStatus.title, res, new Date(), request.id])
           .then(res => {
-            me.appData.updateOrderNumbersUnder(request.status, me.parent, request.order_no)
+            me.appData.updateOrderNumbersUnder(request.status, me.parent, request.order_no, me.tableName)
               .then(function(res) {
                 me.resetRequests();
               });

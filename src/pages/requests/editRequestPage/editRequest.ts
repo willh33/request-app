@@ -1,4 +1,4 @@
-import { AppData } from './../../providers/app-data';
+import { AppData } from './../../../providers/app-data';
 import { Component } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
 import { SQLite, SQLiteObject } from '@ionic-native/sqlite';
@@ -15,6 +15,7 @@ export class EditRequestPage {
   db : any;
   id :any;
   statuses = [];
+  tableName: 'request';
 
   constructor(public navCtrl: NavController,
     public navParams: NavParams,
@@ -84,7 +85,7 @@ export class EditRequestPage {
         //     me.updateOrderNumbers(me.oldData.status, me.oldData.parent, me.oldData.order_no, neworder_no);
         //   })
         //   .catch(e => alert(e));
-        me.appData.getMaxorderNo(me.data.status, me.data.parent)
+        me.appData.getMaxOrderNo(me.data.status, me.data.parent, me.tableName)
           .then(function(res) {
             me.updateOrderNumbers(me.oldData.status, me.oldData.parent, me.oldData.order_no, res);
           });
@@ -96,7 +97,7 @@ export class EditRequestPage {
       console.log("old order no " + oldorder_no + " new order no " + neworder_no);
       console.log("old status " + this.oldData.status + " new status " + this.data.status);
       let me = this;
-      me.appData.updateOrderNumbersUnder(status, parent, oldorder_no)
+      me.appData.updateOrderNumbersUnder(status, parent, oldorder_no, me.tableName)
         .then(res => {
           me.callUdpate(neworder_no);
       });

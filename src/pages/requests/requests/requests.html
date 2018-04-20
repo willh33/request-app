@@ -11,7 +11,7 @@
 </ion-header>
 
 <ion-content>
-  <ion-toolbar no-border-top>
+  <ion-toolbar no-border-top id="statusToolbar">
     <ion-segment [(ngModel)]="requestType">
       <ion-segment-button *ngFor="let status of statuses" [ngStyle]="{'color': status.color}" value="{{status.title}}" (tap)="contentChanged(status.title)">
         {{status.abbreviation}} ({{statusCount[status.title]}})
