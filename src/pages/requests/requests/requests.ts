@@ -33,7 +33,7 @@ export class RequestsPage {
     this.tableName = 'request';
     if(navParams.get("parent") !== undefined)
         this.parent = navParams.get("parent");
-    console.log("this.parent is " + this.parent);
+    // console.log("this.parent is " + this.parent);
     this.requests = {'In Process': []};
     this.statuses.forEach(status => {
         if(this.requestType == undefined)
@@ -59,48 +59,49 @@ export class RequestsPage {
 
   changeStatusLeft(request) {
     let me = this;
-
+    // console.log("change status left");
     let currentStatusIndex = me.statuses.findIndex(status => status.title == this.requestType);
+    let leftStatus;
 
-    if(currentStatusIndex < me.statuses.length)
-    {
-      let leftStatus = me.statuses[currentStatusIndex - 1];
-      me.appData.getMaxOrderNo(leftStatus.title, this.parent, me.tableName)
-        .then(function(res) {
-          console.log("new order number is " + res);
-          console.log("left status " + leftStatus);
-          me.db.executeSql('UPDATE request SET status=?, order_no=?, modified_dt=? WHERE id=?',[leftStatus.title, res, new Date(), request.id])
-          .then(res => {
-            me.appData.updateOrderNumbersUnder(request.status, me.parent, request.order_no, me.tableName)
-              .then(function(res) {
-                me.resetRequests();
-              });
-          });
+    if(currentStatusIndex > 0)
+      leftStatus = me.statuses[currentStatusIndex - 1];
+    else
+      leftStatus = me.statuses[me.statuses.length - 1];
+    me.appData.getMaxOrderNo(leftStatus.title, this.parent, me.tableName)
+      .then(function(res) {
+        // console.log("new order number is " + res);
+        // console.log("left status " + leftStatus);
+        me.db.executeSql('UPDATE request SET status=?, order_no=?, modified_dt=? WHERE id=?',[leftStatus.title, res, new Date(), request.id])
+        .then(res => {
+          me.appData.updateOrderNumbersUnder(request.status, me.parent, request.order_no, me.tableName)
+            .then(function(res) {
+              me.resetRequests();
+            });
         });
-    }
+    });
   }
 
   changeStatusRight(request) {
     let me = this;
 
     let currentStatusIndex = me.statuses.findIndex(status => status.title == me.requestType);
-
-    if(currentStatusIndex < me.statuses.length)
-    {
-      let rightStatus = me.statuses[currentStatusIndex + 1];
-      me.appData.getMaxOrderNo(rightStatus.title, me.parent, me.tableName)
-        .then(function(res) {
-          console.log("new order number is " + res);
-          console.log("right status " + rightStatus.title);
-          me.db.executeSql('UPDATE request SET status=?, order_no=?, modified_dt=? WHERE id=?',[rightStatus.title, res, new Date(), request.id])
-          .then(res => {
-            me.appData.updateOrderNumbersUnder(request.status, me.parent, request.order_no, me.tableName)
-              .then(function(res) {
-                me.resetRequests();
-              });
-          });
+    let rightStatus;
+    if(currentStatusIndex < me.statuses.length - 1)
+      rightStatus = me.statuses[currentStatusIndex + 1];
+    else
+      rightStatus = me.statuses[0];
+    me.appData.getMaxOrderNo(rightStatus.title, me.parent, me.tableName)
+      .then(function(res) {
+        // console.log("new order number is " + res);
+        // console.log("right status " + rightStatus.title);
+        me.db.executeSql('UPDATE request SET status=?, order_no=?, modified_dt=? WHERE id=?',[rightStatus.title, res, new Date(), request.id])
+        .then(res => {
+          me.appData.updateOrderNumbersUnder(request.status, me.parent, request.order_no, me.tableName)
+            .then(function(res) {
+              me.resetRequests();
+            });
         });
-    }
+    });
   }
 
   resetRequests() {
@@ -111,7 +112,7 @@ export class RequestsPage {
     this.statuses.forEach(status => {
       if(this.requestType == undefined)
           this.requestType = status.title;
-      console.log("just before resetting requests " + status.title);
+      // console.log("just before resetting requests " + status.title);
       this.requests[status.title] = [];
       this.statusCount[status.title] = 0;
     });
@@ -154,8 +155,8 @@ export class RequestsPage {
     .then(res => {
       for(var i=0; i<res.rows.length; i++) {
         let item = res.rows.item(i);
-        console.log("status ********* " + item.status + " title " +item.title);
-        console.log("order number " + item.order_no);
+        // console.log("status ********* " + item.status + " title " +item.title);
+        // console.log("order number " + item.order_no);
         if(me.requests[item.status])
         {
           me.requests[item.status].push(
@@ -200,16 +201,16 @@ export class RequestsPage {
     //Select the row being moved
       me.db.executeSql('SELECT * FROM request WHERE order_no = ? AND status = ? AND parent_id = ?', [from, me.requestType, me.parent])
           .then(draggedObject => {
-              console.log("dragged object length " + draggedObject.rows.length);
+              // console.log("dragged object length " + draggedObject.rows.length);
         //Select all the rows that need updated, All the rows in between to and from
               me.db.executeSql('SELECT * FROM request WHERE order_no >= ? AND order_no < ? and status = ? AND parent_id = ? ORDER BY order_no', [to, from, me.requestType, me.parent])
         .then(rows => {
             //Update rows in between
-            console.log("rows to update " + rows.rows.length);
+            // console.log("rows to update " + rows.rows.length);
             for(let i = 0; i < rows.rows.length; i++){
                 let row = rows.rows.item(i);
                 let id = row.id;
-                console.log("update row with title " + row.title);
+                // console.log("update row with title " + row.title);
 
                 me.db.executeSql('UPDATE request SET order_no = order_no + 1 WHERE id = ?', [id])
                     .then(res => console.log(res))

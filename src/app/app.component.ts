@@ -1,6 +1,6 @@
 import { SQLite, SQLiteObject } from '@ionic-native/sqlite';
 import { AppData } from './../providers/app-data';
-import { GroupsPage } from './../pages/groups/groups';
+import { GroupsPage } from './../pages/groups/groups/groups';
 import { RequestsPage } from './../pages/requests/requests/requests';
 import { Component, ViewChild } from '@angular/core';
 import { Nav, Platform } from 'ionic-angular';
@@ -150,6 +150,7 @@ export class MyApp {
   openPage(page) {
     // Reset the content nav to have just this page
     // we wouldn't want the back button to show in this scenario
+    console.log("page is " + page.component);
     this.nav.setRoot(page.component);
   }
 

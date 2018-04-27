@@ -2,12 +2,12 @@ import { StatusBar } from '@ionic-native/status-bar';
 import { Component } from '@angular/core';
 import { NavController, reorderArray, NavParams } from 'ionic-angular';
 import { SQLite, SQLiteObject } from '@ionic-native/sqlite';
-import { AddRequestPage } from '../requests/addRequestsPage/addRequest';
+import { AddRequestPage } from '../../requests/addRequestsPage/addRequest';
 import { Platform } from 'ionic-angular';
-import { EditRequestPage } from '../requests/editRequestPage/editRequest';
-import { AppData } from '../../providers/app-data';
+import { EditRequestPage } from '../../requests/editRequestPage/editRequest';
+import { AppData } from '../../../providers/app-data';
 import { PopoverController } from 'ionic-angular';
-import { PopoverPage } from '../requests/popoverPage/popoverPage'
+import { PopoverPage } from '../../requests/popoverPage/popoverPage'
 
 @Component({
   selector: 'page-groups',
@@ -16,7 +16,7 @@ import { PopoverPage } from '../requests/popoverPage/popoverPage'
 export class GroupsPage {
   selectedItem: any;
   icons: string[];
-  groups = {'In Process': []};
+  groups = [];
   totalGroups : 0;
   groupType: "";
   db : any;
@@ -33,7 +33,7 @@ export class GroupsPage {
     if(navParams.get("parent") !== undefined)
         this.parent = navParams.get("parent");
     console.log("this.parent is " + this.parent);
-    this.groups = {'In Process': []};
+    this.groups = [];
   }
 
   presentPopover(myEvent) {
@@ -100,7 +100,7 @@ changeStatusRight(group) {
     //set all the setup data
     this.db = this.appData.db;
     this.statuses = this.appData.statuses;
-    this.groups = {'In Process': []};
+    this.groups = [];
     this.statuses.forEach(status => {
       if(this.groupType == undefined)
           this.groupType = status.title;

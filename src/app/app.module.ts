@@ -1,7 +1,7 @@
 import { AppData } from './../providers/app-data';
 import { Toast } from '@ionic-native/toast';
 import { SQLite } from '@ionic-native/sqlite';
-import { GroupsPage } from '../pages/groups/groups';
+import { GroupsPage } from '../pages/groups/groups/groups';
 import { RequestsPage } from './../pages/requests/requests/requests';
 import { BrowserModule } from '@angular/platform-browser';
 import { ErrorHandler, NgModule } from '@angular/core';

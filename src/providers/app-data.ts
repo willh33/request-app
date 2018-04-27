@@ -23,21 +23,7 @@ export class AppData {
     console.log("insert statuses");
     return db.executeSql('SELECT * FROM status', {}).then(res => {
       if(res.rows.length < 1)
-      {
-        console.log("insert in app data ");
-        let query = "INSERT INTO status (title, abbreviation, color, created_dt) VALUES"
-                                      + "('To Do', 'To Do'," + "'#0644EE', '" + new Date() + "'),"
-                                      + "('In Process', 'In Pro', " + "'#460285', '" + new Date() + "'),"
-                                      + "('Review', 'Rev', " + "'#FF7400', '" + new Date() + "'),"
-                                      + "('Final Review', 'F Rev', " + "'#1CA49A', '" + new Date() + "'),"
-                                      + "('Done', 'Done', " + "'#00F240', '" + new Date() + "')";
-        console.log("query is " + query);
-        return db.executeSql(query, [])
-        .then(res => {
-          return me.getAndSetStatuses(db);
-        })
-        .catch(e => alert(e));
-      }
+        return;
       else
         return me.getAndSetStatuses(db);
     }).catch(e => alert(e));
