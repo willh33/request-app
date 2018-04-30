@@ -1,0 +1,33 @@
+page-person {
+  .segment-md .segment-button.todo-segment {
+    color: #e13838;
+  }
+  .segment-md .segment-button.todo-segment.segment-activated {
+    border-color: #e13838;
+  }
+  .segment-md .segment-button.doing-segment {
+    color: #ffbb00;
+  }
+  .segment-md .segment-button.doing-segment.segment-activated {
+    border-color: #ffbb00;
+  }
+  .segment-md .segment-button.done-segment {
+    color: #00f8ae;
+  }
+  .segment-md .segment-button.done-segment.segment-activated {
+    border-color: #00f8ae;
+  }
+  .add-circle {
+    float: right;
+  }
+  .person-navbar .toolbar-content, .person-navbar .toolbar-content-md{
+      display: flex;
+  }
+  .button-md {
+      background-color: transparent;
+      color: white;
+  }
+  #statusToolbar > toolbar-background-md {
+    background-color: #82858C;
+  }
+}

@@ -1,3 +1,4 @@
+import { RequestPopoverPage } from './../requestPopoverPage/requestPopoverPage';
 import { StatusBar } from '@ionic-native/status-bar';
 import { Component } from '@angular/core';
 import { NavController, reorderArray, NavParams } from 'ionic-angular';
@@ -7,7 +8,6 @@ import { Platform } from 'ionic-angular';
 import { EditRequestPage } from '../editRequestPage/editRequest';
 import { AppData } from '../../../providers/app-data';
 import { PopoverController } from 'ionic-angular';
-import { PopoverPage } from '../popoverPage/popoverPage'
 
 @Component({
   selector: 'page-requests',
@@ -44,7 +44,7 @@ export class RequestsPage {
   }
 
   presentPopover(myEvent) {
-    let popover = this.popoverCtrl.create(PopoverPage, {
+    let popover = this.popoverCtrl.create(RequestPopoverPage, {
         parent: this.parent,
         status: this.requestType
       },

@@ -1,0 +1,26 @@
+<ion-header>
+  <ion-navbar>
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>Add Person</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+    <form (ngSubmit)="saveData()">
+      <ion-item>
+        <ion-label>First Name</ion-label>
+        <ion-input type="text" placeholder="First Name" [(ngModel)]="data.first_name" name="title" required="" ></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label>Middle Name</ion-label>
+        <ion-input type="text" placeholder="Middle Name" [(ngModel)]="data.middle_name" name="description" required="" ></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label>Last Name</ion-label>
+        <ion-input type="text" placeholder="Last Name" [(ngModel)]="data.last_name" name="description" required="" ></ion-input>
+      </ion-item>
+      <button ion-button type="submit" block>Save Data</button>
+    </form>
+</ion-content>

@@ -1,4 +1,5 @@
-import { GroupPopoverPage } from './../groupPopoverPage/groupPopoverPage';
+import { PersonPopoverPage } from './../personPopoverPage/personPopoverPage';
+
 import { StatusBar } from '@ionic-native/status-bar';
 import { Component } from '@angular/core';
 import { NavController, reorderArray, NavParams } from 'ionic-angular';
@@ -10,21 +11,21 @@ import { AppData } from '../../../providers/app-data';
 import { PopoverController } from 'ionic-angular';
 
 @Component({
-  selector: 'page-groups',
-  templateUrl: 'groups.html'
+  selector: 'page-person',
+  templateUrl: 'person.html'
 })
-export class GroupsPage {
+export class PersonPage {
   selectedItem: any;
   icons: string[];
-  groups = [];
-  totalGroups : 0;
+  people = [];
+  totalPeople : 0;
   // groupType: "";
   db : any;
   // statuses = [];
   parent = -1;
-  title = "Groups";
+  title = "People";
   // statusCount = {};
-  tableName: "group"
+  tableName: "person"
 
 
   constructor(public navCtrl: NavController, public navParams: NavParams, private sqlite: SQLite,  private platform: Platform, private appData: AppData, private popoverCtrl: PopoverController) {
@@ -33,11 +34,11 @@ export class GroupsPage {
     if(navParams.get("parent") !== undefined)
         this.parent = navParams.get("parent");
     console.log("this.parent is " + this.parent);
-    this.groups = [];
+    this.people = [];
   }
 
   presentPopover(myEvent) {
-    let popover = this.popoverCtrl.create(GroupPopoverPage, {
+    let popover = this.popoverCtrl.create(PersonPopoverPage, {
         parent: this.parent
         // status: this.groupType
       },
@@ -98,11 +99,11 @@ export class GroupsPage {
 //     }
 //   }
 
-  resetGroups() {
+  resetPeople() {
     //set all the setup data
     this.db = this.appData.db;
     // this.statuses = this.appData.statuses;
-    this.groups = [];
+    this.people = [];
     // this.statuses.forEach(status => {
     //   if(this.groupType == undefined)
     //       this.groupType = status.title;
@@ -110,12 +111,12 @@ export class GroupsPage {
     //   this.groups[status.title] = [];
     //   this.statusCount[status.title] = 0;
     // });
-    this.retrieveGroups();
+    this.retrievePeople();
   }
 
   itemTapped(event, item) {
     // That's right, we're pushing to ourselves!
-    this.navCtrl.push(GroupsPage, {
+    this.navCtrl.push(PersonPage, {
       item: item
     });
   }
@@ -131,39 +132,40 @@ export class GroupsPage {
   ionViewWillEnter() {
     console.log("will enter ");
     this.platform.ready().then(() => {
-      this.resetGroups();
+      this.resetPeople();
     });
   }
 
-  retrieveGroups() {
+  retrievePeople() {
     let me = this;
     if(this.parent === 0)
-      this.title = "Groups";
+      this.title = "People";
     else {
-        me.db.executeSql('SELECT * FROM groups WHERE id = ? ORDER BY order_no', [me.parent]).then(res => {
+        me.db.executeSql('SELECT * FROM person WHERE id = ? ORDER BY order_no', [me.parent]).then(res => {
             if(res.rows.length > 0)
-                this.title = res.rows.item(0).title;
+                this.title = res.rows.item(0).first_name +  " " + res.rows.item(0).middle_name + " " + res.rows.item(0).last_name;
       });
     }
-    me.db.executeSql('SELECT * FROM groups WHERE parent_id = ? ORDER BY order_no', [me.parent])
+    me.db.executeSql('SELECT * FROM person WHERE parent_id = ? ORDER BY order_no', [me.parent])
     .then(res => {
       for(var i=0; i<res.rows.length; i++) {
         let item = res.rows.item(i);
         console.log("order number " + item.order_no);
-            me.groups.push(
+            me.people.push(
           // me.groups[item.status].push(
             {
               id:item.id,
-              title:item.title,
-              description:item.description,
-              status:item.status,
+              firstName:item.first_name,
+              middleName:item.middle_name,
+              lastName:item.last_name,
+              parent:item.parent_id,
               order_no:item.order_no,
               createddt:item.createddt,
               modified_dt:item.modified_dt
             });
             // me.statusCount[item.status] = this.statusCount[item.status] + 1;
       }
-      me.totalGroups = res.rows.length;
+      me.totalPeople = res.rows.length;
     }).catch(e => alert(e));
   }
 
@@ -180,7 +182,7 @@ export class GroupsPage {
         //decrement corresponding rows once
         this.swapAndDecrement(from, to);
       }
-      let arrayToReorder = this.groups;
+      let arrayToReorder = this.people;
       // let arrayToReorder = this.groups[this.groupType];
       let element = arrayToReorder[from];
       arrayToReorder.splice(indexes.from, 1);
@@ -191,11 +193,11 @@ export class GroupsPage {
   swapAndIncrement(from, to) {
     let me = this;
     //Select the row being moved
-      me.db.executeSql('SELECT * FROM groups WHERE order_no = ? AND parent_id = ?', [from, me.parent])
+      me.db.executeSql('SELECT * FROM person WHERE order_no = ? AND parent_id = ?', [from, me.parent])
           .then(draggedObject => {
               console.log("dragged object length " + draggedObject.rows.length);
         //Select all the rows that need updated, All the rows in between to and from
-              me.db.executeSql('SELECT * FROM groups WHERE order_no >= ? AND order_no < ? AND parent_id = ? ORDER BY order_no', [to, from, me.parent])
+              me.db.executeSql('SELECT * FROM person WHERE order_no >= ? AND order_no < ? AND parent_id = ? ORDER BY order_no', [to, from, me.parent])
         .then(rows => {
             //Update rows in between
             console.log("rows to update " + rows.rows.length);
@@ -204,7 +206,7 @@ export class GroupsPage {
                 let id = row.id;
                 console.log("update row with title " + row.title);
 
-                me.db.executeSql('UPDATE groups SET order_no = order_no + 1 WHERE id = ?', [id])
+                me.db.executeSql('UPDATE person SET order_no = order_no + 1 WHERE id = ?', [id])
                     .then(res => console.log(res))
                     .catch(e => alert(e));
             }
@@ -212,7 +214,7 @@ export class GroupsPage {
             //Update the row that was dragged.
             let draggedid = draggedObject.rows.item(0).id;
 
-            me.db.executeSql('UPDATE groups SET order_no = ? WHERE id = ?', [to, draggedid])
+            me.db.executeSql('UPDATE person SET order_no = ? WHERE id = ?', [to, draggedid])
                 .then(res => {
                 })
                 .catch(e => alert(e));
@@ -225,17 +227,17 @@ export class GroupsPage {
   swapAndDecrement(from, to) {
     let me = this;
     //Select the row being moved
-      me.db.executeSql('SELECT * FROM groups WHERE order_no = ? AND parent_Id = ?', [from, me.parent])
+      me.db.executeSql('SELECT * FROM person WHERE order_no = ? AND parent_Id = ?', [from, me.parent])
     .then(draggedObject => {
         //Select all the rows that need updated, All the rows in between to and from
-        me.db.executeSql('SELECT * FROM groups WHERE order_no > ? AND order_no <= ? AND parent_Id = ? ORDER BY order_no', [from , to, me.parent])
+        me.db.executeSql('SELECT * FROM person WHERE order_no > ? AND order_no <= ? AND parent_Id = ? ORDER BY order_no', [from , to, me.parent])
         .then(rows => {
             //Update rows in between
             for(let i = 0; i < rows.rows.length; i++){
               let row = rows.rows.item(i);
               let id = row.id;
 
-              me.db.executeSql('UPDATE groups SET order_no = order_no - 1 WHERE id = ?', [id])
+              me.db.executeSql('UPDATE person SET order_no = order_no - 1 WHERE id = ?', [id])
                 .then(res => console.log(res))
                 .catch(e => alert(e));
             }
@@ -243,7 +245,7 @@ export class GroupsPage {
             //Update the row that was dragged.
             let draggedid = draggedObject.rows.item(0).id;
 
-            me.db.executeSql('UPDATE groups SET order_no = ? WHERE id = ?', [to, draggedid])
+            me.db.executeSql('UPDATE person SET order_no = ? WHERE id = ?', [to, draggedid])
                 .then(res => {
                 })
                 .catch(e => alert(e));
@@ -260,8 +262,8 @@ export class GroupsPage {
     });
   }
 
-  goToNewGroupPageContext(id) {
-    this.navCtrl.push(GroupsPage, {
+  goToNewPersonPageContext(id) {
+    this.navCtrl.push(PersonPage, {
       parent:id
     });
   }
@@ -277,10 +279,10 @@ export class GroupsPage {
       name: 'ionicdb.db',
       location: 'default'
     }).then((db: SQLiteObject) => {
-      db.executeSql('DELETE FROM groups WHERE id=?', [id])
+      db.executeSql('DELETE FROM person WHERE id=?', [id])
       .then(res => {
         console.log(res);
-        this.retrieveGroups();
+        this.retrievePeople();
       })
       .catch(e => console.log(e));
     }).catch(e => console.log(e));

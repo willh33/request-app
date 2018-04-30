@@ -1,3 +1,11 @@
+import { EditPersonPage } from './../pages/person/editPersonPage/editPerson';
+import { AddPersonPage } from './../pages/person/addPersonPage/addPerson';
+import { PersonPopoverPage } from './../pages/person/personPopoverPage/personPopoverPage';
+import { PersonPage } from './../pages/person/person/person';
+import { GroupPopoverPage } from './../pages/groups/groupPopoverPage/groupPopoverPage';
+import { RequestPopoverPage } from './../pages/requests/requestPopoverPage/requestPopoverPage';
+import { EditGroupPage } from './../pages/groups/editGroupPage/editGroup';
+import { AddGroupPage } from './../pages/groups/addGroupPage/addGroup';
 import { AppData } from './../providers/app-data';
 import { Toast } from '@ionic-native/toast';
 import { SQLite } from '@ionic-native/sqlite';
@@ -13,7 +21,6 @@ import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { AddRequestPage } from '../pages/requests/addRequestsPage/addRequest';
 import { EditRequestPage } from '../pages/requests/editRequestPage/editRequest';
-import { PopoverPage } from '../pages/requests/popoverPage/popoverPage';
 
 @NgModule({
   declarations: [
@@ -22,8 +29,15 @@ import { PopoverPage } from '../pages/requests/popoverPage/popoverPage';
     RequestsPage,
     AddRequestPage,
     EditRequestPage,
-    PopoverPage,
-    GroupsPage
+    RequestPopoverPage,
+    GroupsPage,
+    AddGroupPage,
+    EditGroupPage,
+    GroupPopoverPage,
+    PersonPage,
+    AddPersonPage,
+    EditPersonPage,
+    PersonPopoverPage
   ],
   imports: [
     BrowserModule,
@@ -36,8 +50,15 @@ import { PopoverPage } from '../pages/requests/popoverPage/popoverPage';
     RequestsPage,
     AddRequestPage,
     EditRequestPage,
-    PopoverPage,
-    GroupsPage
+    RequestPopoverPage,
+    GroupPopoverPage,
+    AddGroupPage,
+    EditGroupPage,
+    GroupsPage,
+    PersonPage,
+    AddPersonPage,
+    EditPersonPage,
+    PersonPopoverPage
   ],
   providers: [
     StatusBar,

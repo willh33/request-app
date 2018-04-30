@@ -1,5 +1,5 @@
-<ion-header id="groups-header">
-  <ion-navbar class="groups-navbar">
+<ion-header id="person-header">
+  <ion-navbar class="person-navbar">
     <button ion-button [menuToggle]="">
       <ion-icon name="menu"></ion-icon>
     </button>
@@ -13,8 +13,8 @@
 
 <ion-content>
   <ion-list reorder="true" (ionItemReorder)="reorderItems($event)" can-swipe="true">
-      <ion-item nopadding *ngFor="let group of groups" (click)="goToNewGroupPageContext(group.id)">
-          <span>{{group.title}}</span>
+      <ion-item nopadding *ngFor="let person of people" (click)="goToNewPersonPageContext(person.id)">
+          <span>{{person.firstName + " " + person.middleName + " " + person.lastName}}</span>
       </ion-item>
   </ion-list>
 </ion-content>

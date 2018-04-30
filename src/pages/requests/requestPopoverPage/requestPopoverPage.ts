@@ -1,16 +1,18 @@
+import { EditRequestPage } from './../editRequestPage/editRequest';
+import { AddRequestPage } from './../addRequestsPage/addRequest';
 import { Component } from '@angular/core';
 import { NavParams, NavController, ViewController, App } from 'ionic-angular';
 
 @Component({
-  selector: 'page-popover',
+  selector: 'page-request-popover',
   template: `
     <ion-list class="popover-list">
-       <button ion-item (click)="addRequest()">Add Group</button>
-       <button ion-item (click)="editRequest()" *ngIf="id != -1">Edit Group</button>
+       <button ion-item (click)="addRequest()">Add Request</button>
+       <button ion-item (click)="editRequest()" *ngIf="id != -1">Edit Request</button>
     </ion-list>
   `
 })
-export class PopoverPage {
+export class RequestPopoverPage {
   id: any;
   status: any;
 
@@ -28,7 +30,7 @@ export class PopoverPage {
   addRequest() {
     // this.viewCtrl.dismiss();
     this.viewCtrl.dismiss().then(() => {
-      this.app.getRootNav().push(AddGroupPage,{
+      this.app.getRootNav().push(AddRequestPage,{
         parent: this.id,
         status: this.status
       });
@@ -37,7 +39,7 @@ export class PopoverPage {
 
   editRequest() {
     this.viewCtrl.dismiss().then(() => {
-      this.app.getRootNav().push(EditGroupPage,{
+      this.app.getRootNav().push(EditRequestPage,{
         id: this.id
       });
     });

@@ -1,3 +1,4 @@
+import { PersonPage } from './../pages/person/person/person';
 import { SQLite, SQLiteObject } from '@ionic-native/sqlite';
 import { AppData } from './../providers/app-data';
 import { GroupsPage } from './../pages/groups/groups/groups';
@@ -34,7 +35,7 @@ export class MyApp {
     versionNumber: 2,
     queries: [
       "CREATE TABLE IF NOT EXISTS groups (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, description TEXT, status TEXT, parent_id INTEGER, order_no INTEGER, created_dt DATE, modified_dt DATE)",
-      "CREATE TABLE IF NOT EXISTS people (id INTEGER PRIMARY KEY AUTOINCREMENT, first_name TEXT, middle_name TEXT, last_name TEXT, parent_id INTEGER, order_no INTEGER,  created_dt DATE, modified_dt DATE)"
+      "CREATE TABLE IF NOT EXISTS person (id INTEGER PRIMARY KEY AUTOINCREMENT, first_name TEXT, middle_name TEXT, last_name TEXT, parent_id INTEGER, order_no INTEGER,  created_dt DATE, modified_dt DATE)"
     ]
   };
 
@@ -61,7 +62,8 @@ export class MyApp {
     // used for an example of ngFor and navigation
     this.pages = [
       { title: 'Requests', component: RequestsPage },
-      { title: 'Groups', component: GroupsPage }
+      { title: 'Groups', component: GroupsPage },
+      { title: 'People', component: PersonPage }
     ];
 
     this.initializeApp();
