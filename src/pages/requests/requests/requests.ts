@@ -67,13 +67,13 @@ export class RequestsPage {
       leftStatus = me.statuses[currentStatusIndex - 1];
     else
       leftStatus = me.statuses[me.statuses.length - 1];
-    me.appData.getMaxOrderNo(leftStatus.title, this.parent, me.tableName)
+    me.appData.getMaxOrderNoWithStatus(leftStatus.title, this.parent, me.tableName)
       .then(function(res) {
         // console.log("new order number is " + res);
         // console.log("left status " + leftStatus);
         me.db.executeSql('UPDATE request SET status=?, order_no=?, modified_dt=? WHERE id=?',[leftStatus.title, res, new Date(), request.id])
         .then(res => {
-          me.appData.updateOrderNumbersUnder(request.status, me.parent, request.order_no, me.tableName)
+          me.appData.updateOrderNumbersUnderWithStatus(request.status, me.parent, request.order_no, me.tableName)
             .then(function(res) {
               me.resetRequests();
             });
@@ -90,13 +90,13 @@ export class RequestsPage {
       rightStatus = me.statuses[currentStatusIndex + 1];
     else
       rightStatus = me.statuses[0];
-    me.appData.getMaxOrderNo(rightStatus.title, me.parent, me.tableName)
+    me.appData.getMaxOrderNoWithStatus(rightStatus.title, me.parent, me.tableName)
       .then(function(res) {
         // console.log("new order number is " + res);
         // console.log("right status " + rightStatus.title);
         me.db.executeSql('UPDATE request SET status=?, order_no=?, modified_dt=? WHERE id=?',[rightStatus.title, res, new Date(), request.id])
         .then(res => {
-          me.appData.updateOrderNumbersUnder(request.status, me.parent, request.order_no, me.tableName)
+          me.appData.updateOrderNumbersUnderWithStatus(request.status, me.parent, request.order_no, me.tableName)
             .then(function(res) {
               me.resetRequests();
             });

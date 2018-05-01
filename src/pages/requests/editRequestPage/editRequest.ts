@@ -66,42 +66,19 @@ export class EditRequestPage {
   }
 
   updateData() {
-    let me = this;
-      if(me.oldData.status === me.data.status)
-      {
-        me.callUdpate(me.data.order_no);
-      }
-      else
-      {
-        // me.db.executeSql('SELECT MAX(order_no) as maxorder_no FROM request WHERE request.status = ? AND request.parentid = ?', [me.data.status, me.data.parent])
-        //   .then(res => {
-        //     console.log("parent " + me.data.parent + " my new data status " + me.data.status);
-        //     let maxorder_no = res.rows.item(0).maxorder_no;
-        //     let neworder_no = 0;
-        //     if(maxorder_no == null)
-        //       neworder_no = 0;
-        //     else
-        //       neworder_no = maxorder_no + 1
-        //     me.updateOrderNumbers(me.oldData.status, me.oldData.parent, me.oldData.order_no, neworder_no);
-        //   })
-        //   .catch(e => alert(e));
-        me.appData.getMaxOrderNo(me.data.status, me.data.parent, me.tableName)
-          .then(function(res) {
-            me.updateOrderNumbers(me.oldData.status, me.oldData.parent, me.oldData.order_no, res);
-          });
-
-      }
-    }
-
-    updateOrderNumbers(status, parent, oldorder_no, neworder_no) {
-      console.log("old order no " + oldorder_no + " new order no " + neworder_no);
-      console.log("old status " + this.oldData.status + " new status " + this.data.status);
       let me = this;
-      me.appData.updateOrderNumbersUnder(status, parent, oldorder_no, me.tableName)
-        .then(res => {
-          me.callUdpate(neworder_no);
-      });
+      me.callUdpate(me.data.order_no);
     }
+
+    // updateOrderNumbers(status, parent, oldorder_no, neworder_no) {
+    //   console.log("old order no " + oldorder_no + " new order no " + neworder_no);
+    //   console.log("old status " + this.oldData.status + " new status " + this.data.status);
+    //   let me = this;
+    //   me.appData.updateOrderNumbersUnder(status, parent, oldorder_no, me.tableName)
+    //     .then(res => {
+    //       me.callUdpate(neworder_no);
+    //   });
+    // }
 
     callUdpate(order_no) {
 

@@ -66,30 +66,19 @@ export class EditGroupPage {
   }
 
   updateData() {
-    let me = this;
-      if(me.oldData.status === me.data.status)
-      {
-        me.callUdpate(me.data.order_no);
-      }
-      else
-      {
-        me.appData.getMaxOrderNo(me.data.status, me.data.parent, me.tableName)
-          .then(function(res) {
-            me.updateOrderNumbers(me.oldData.status, me.oldData.parent, me.oldData.order_no, res);
-          });
-
-      }
-    }
-
-    updateOrderNumbers(status, parent, oldorder_no, neworder_no) {
-      console.log("old order no " + oldorder_no + " new order no " + neworder_no);
-      console.log("old status " + this.oldData.status + " new status " + this.data.status);
       let me = this;
-      me.appData.updateOrderNumbersUnder(status, parent, oldorder_no, me.tableName)
-        .then(res => {
-          me.callUdpate(neworder_no);
-      });
+      me.callUdpate(me.data.order_no);
     }
+
+    // updateOrderNumbers(parent, oldorder_no, neworder_no) {
+    //   console.log("old order no " + oldorder_no + " new order no " + neworder_no);
+    //   console.log("old status " + this.oldData.status + " new status " + this.data.status);
+    //   let me = this;
+    //   me.appData.updateOrderNumbersUnderWithoutStatus(parent, oldorder_no, me.tableName)
+    //     .then(res => {
+    //       me.callUdpate(neworder_no);
+    //   });
+    // }
 
     callUdpate(order_no) {
 

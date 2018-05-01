@@ -10,8 +10,8 @@ import { Toast } from '@ionic-native/toast';
 })
 export class EditPersonPage {
 
-  data = { id:0, title:"", description:"", parent: "-1", status:"default", order_no: 0, created_dt: new Date(), modified_dt: null};
-  oldData = { id:0, title:"", description:"",  parent: "-1", status:"default", order_no: 0, created_dt: new Date(), modified_dt: null};
+  data = { id:0, first_name:"", middle_name:"", last_name:"", parent: "-1", order_no: 0, created_dt: null, modified_dt: new Date()};
+  oldData = { id:0, first_name:"", middle_name:"", last_name:"",  parent: "-1", order_no: 0,  created_dt: null, modified_dt: new Date()};
   db : any;
   id :any;
   statuses = [];
@@ -36,9 +36,9 @@ export class EditPersonPage {
           let item = res.rows.item(0);
           console.log("id " + item.id);
           this.data.id = item.id;
-          this.data.title = item.title;
-          this.data.description = item.description;
-          this.data.status = item.status;
+          this.data.first_name = item.first_name;
+          this.data.middle_name = item.middle_name;
+          this.data.last_name = item.last_name;
           this.data.order_no = item.order_no;
           this.data.created_dt = item.created_dt;
           this.data.modified_dt = new Date();
@@ -46,9 +46,9 @@ export class EditPersonPage {
 
 
           this.oldData.id = item.id;
-          this.oldData.title = item.title;
-          this.oldData.description = item.description;
-          this.oldData.status = item.status;
+          this.oldData.first_name = item.first_name;
+          this.oldData.middle_name = item.middle_name;
+          this.oldData.last_name = item.last_name;
           this.oldData.order_no = item.order_no;
           this.oldData.created_dt = item.created_dt;
           this.oldData.modified_dt = new Date();
@@ -66,36 +66,24 @@ export class EditPersonPage {
   }
 
   updateData() {
-    let me = this;
-      if(me.oldData.status === me.data.status)
-      {
-        me.callUdpate(me.data.order_no);
-      }
-      else
-      {
-        me.appData.getMaxOrderNo(me.data.status, me.data.parent, me.tableName)
-          .then(function(res) {
-            me.updateOrderNumbers(me.oldData.status, me.oldData.parent, me.oldData.order_no, res);
-          });
-
-      }
-    }
-
-    updateOrderNumbers(status, parent, oldorder_no, neworder_no) {
-      console.log("old order no " + oldorder_no + " new order no " + neworder_no);
-      console.log("old status " + this.oldData.status + " new status " + this.data.status);
       let me = this;
-      me.appData.updateOrderNumbersUnder(status, parent, oldorder_no, me.tableName)
-        .then(res => {
-          me.callUdpate(neworder_no);
-      });
+      me.callUdpate(me.data.order_no);
     }
+
+    // updateOrderNumbers(parent, oldorder_no, neworder_no) {
+    //   console.log("old order no " + oldorder_no + " new order no " + neworder_no);
+    //   let me = this;
+    //   me.appData.updateOrderNumbersUnderWithoutStatus(parent, oldorder_no, me.tableName)
+    //     .then(res => {
+    //       me.callUdpate(neworder_no);
+    //   });
+    // }
 
     callUdpate(order_no) {
 
     //It appears to update good other than the order number doesnt appear to be set to the max order number of the new status.
     let me = this;
-    me.db.executeSql('UPDATE person SET title=?,description=?,status=?, order_no=?, modified_dt=? WHERE id=?',[this.data.title,this.data.description, 'default', order_no,new Date(), this.id])
+    me.db.executeSql('UPDATE person SET first_name=?,middle_name=?,last_name=?, order_no=?, modified_dt=? WHERE id=?',[this.data.first_name,this.data.middle_name, this.data.last_name, order_no,new Date(), this.id])
       .then(res => {
         console.log("udpated the row being edited " + this.id);
         me.navCtrl.pop();
