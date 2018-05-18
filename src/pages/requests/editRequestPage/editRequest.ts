@@ -16,6 +16,9 @@ export class EditRequestPage {
   id :any;
   statuses = [];
   tableName: 'request';
+  edit: false;
+  parent : 0;
+  requestTitle = ""
 
   constructor(public navCtrl: NavController,
     public navParams: NavParams,
@@ -25,7 +28,15 @@ export class EditRequestPage {
       this.db = this.appData.db;
       this.statuses = this.appData.statuses;
       this.id = navParams.get("id");
-      this.getCurrentData(this.id);
+      this.edit = navParams.get("edit");
+      if(this.edit)
+        this.getCurrentData(this.id);
+      else
+      {
+        this.requestTitle = "Add Request"
+        this.parent = navParams.get('parent');
+        this.data.status = navParams.get('status');
+      }
   }
 
   getCurrentData(id) {
@@ -44,7 +55,6 @@ export class EditRequestPage {
           this.data.modified_dt = new Date();
           this.data.parent = item.parentid;
 
-
           this.oldData.id = item.id;
           this.oldData.title = item.title;
           this.oldData.description = item.description;
@@ -53,6 +63,8 @@ export class EditRequestPage {
           this.oldData.created_dt = item.created_dt;
           this.oldData.modified_dt = new Date();
           this.oldData.parent = item.parentid;
+
+          this.requestTitle = "Edit " + this.data.title;
         }
       })
       .catch(e => {
@@ -67,7 +79,10 @@ export class EditRequestPage {
 
   updateData() {
       let me = this;
-      me.callUdpate(me.data.order_no);
+      if(this.edit)
+        me.callUdpate(me.data.order_no);
+      else
+        me.saveData();
     }
 
     // updateOrderNumbers(status, parent, oldorder_no, neworder_no) {
@@ -80,7 +95,8 @@ export class EditRequestPage {
     //   });
     // }
 
-    callUdpate(order_no) {
+  // Update an existing request
+  callUdpate(order_no) {
 
     //It appears to update good other than the order number doesnt appear to be set to the max order number of the new status.
     let me = this;
@@ -102,5 +118,41 @@ export class EditRequestPage {
           }
       );
     });
+  }
+
+  //Save a new one
+  saveData() {
+    let me = this;
+    me.db = me.appData.db;
+    me.db.executeSql('SELECT MAX(order_no) as maxorderno FROM request WHERE request.status = ? AND request.parent_id = ?', [me.data.status, me.parent])
+    .then(res => {
+      let maxOrderNo = res.rows.item(0).maxorderno;
+      let newOrderNo = 0;
+      if(maxOrderNo == null)
+        newOrderNo = 0;
+      else
+        newOrderNo = maxOrderNo + 1
+
+        me.db.executeSql('INSERT INTO request (title, description, parent_id, status, order_no, created_dt, modified_dt) VALUES(?,?,?,?,?,?, NULL)',[me.data.title, me.data.description, this.parent, me.data.status,newOrderNo, new Date()])
+            .then(res => {
+                console.log(res);
+                me.navCtrl.pop();
+                /**me.toast.show('Data saved', '5000', 'center').subscribe(
+                    toast => {
+                        console.log("navctrl pop");
+                        me.navCtrl.pop();
+                    }
+                );**/
+      })
+      .catch(e => {
+        console.log(e);
+        me.toast.show(e, '5000', 'center').subscribe(
+          toast => {
+            console.log(toast);
+          }
+        );
+      });
+    })
+    .catch(e => alert(e));
   }
 }

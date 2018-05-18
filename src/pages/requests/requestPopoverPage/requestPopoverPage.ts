@@ -1,5 +1,4 @@
 import { EditRequestPage } from './../editRequestPage/editRequest';
-import { AddRequestPage } from './../addRequestsPage/addRequest';
 import { Component } from '@angular/core';
 import { NavParams, NavController, ViewController, App } from 'ionic-angular';
 
@@ -30,9 +29,10 @@ export class RequestPopoverPage {
   addRequest() {
     // this.viewCtrl.dismiss();
     this.viewCtrl.dismiss().then(() => {
-      this.app.getRootNav().push(AddRequestPage,{
+      this.app.getRootNav().push(EditRequestPage,{
         parent: this.id,
-        status: this.status
+        status: this.status,
+        edit: false
       });
     });
   }
@@ -40,7 +40,8 @@ export class RequestPopoverPage {
   editRequest() {
     this.viewCtrl.dismiss().then(() => {
       this.app.getRootNav().push(EditRequestPage,{
-        id: this.id
+        id: this.id,
+        edit: true
       });
     });
   }

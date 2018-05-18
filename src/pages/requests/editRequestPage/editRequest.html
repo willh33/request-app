@@ -1,13 +1,12 @@
 <ion-header>
 
   <ion-navbar>
-    <ion-title>Edit</ion-title>
+    <ion-title>{{requestTitle}}</ion-title>
   </ion-navbar>
 
 </ion-header>
 
 <ion-content padding>
-  <h2>Edit</h2>
   <form (ngSubmit)="updateData()">
     <ion-item>
     <ion-label>Status</ion-label>

@@ -19,7 +19,6 @@ import { MyApp } from './app.component';
 
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
-import { AddRequestPage } from '../pages/requests/addRequestsPage/addRequest';
 import { EditRequestPage } from '../pages/requests/editRequestPage/editRequest';
 
 @NgModule({
@@ -27,7 +26,6 @@ import { EditRequestPage } from '../pages/requests/editRequestPage/editRequest';
     MyApp,
     GroupsPage,
     RequestsPage,
-    AddRequestPage,
     EditRequestPage,
     RequestPopoverPage,
     GroupsPage,
@@ -48,7 +46,6 @@ import { EditRequestPage } from '../pages/requests/editRequestPage/editRequest';
     MyApp,
     GroupsPage,
     RequestsPage,
-    AddRequestPage,
     EditRequestPage,
     RequestPopoverPage,
     GroupPopoverPage,
